@@ -1,0 +1,12 @@
+    if (u[n1][c1] == 2 || u[n1][c1] == -2)
+    {
+          if (diff_coln == 1)
+                return 1 ;
+            else                                        // checking if the middle piece is of opponent
+            {
+                if (u[n1][c1] * u[(n1 + n2)/2][(c1+c2)/2] < 0)
+                    return 2 ;                          // if the player has to play another move
+                else 
+                    return 0 ;
+            }
+    
