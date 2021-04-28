@@ -5,7 +5,7 @@ int main(){
     Game_Spec* g ;
     g = Init_Game(0,0,0,12,12,0,0);
     Init(u);
-    Print_Num(u);
+
     Print_Board(u,0);
 
     char s[100];
@@ -14,7 +14,6 @@ int main(){
         scanf("%s",s);
         if(strcmp(s,"MOVE")==0){Move(u,&player,g);}
         if(strcmp(s,"UNDO")==0){Undo(u,g);}
-        Print_Num(u);
         Print_Board(u,0);
         player=-player;
         getchar();

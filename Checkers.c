@@ -1,5 +1,12 @@
 #include "Checkers.h"
 
+void swap(int * a , int * b){
+    int temp=*a;
+    *a=*b;
+    *b=temp;
+}
+
+
 Move_Node* Makenode(void)
 {
     Move_Node* Temp = (Move_Node*)malloc(sizeof(Move_Node));
@@ -29,7 +36,7 @@ Game_Spec* Init_Game(int Auto_Rotate, int Compulsory_Capture, int Num_Moves, int
     return Game;
 }
 
-void Insert_move(Game_Spec* Game, char Initial_Char, char Final_Char, int Initial_Int, int Final_Int, int Type, int Kill, int Kill_Type)
+void Insert_move(Game_Spec* Game, char Initial_Char, char Final_Char, int Initial_Int, int Final_Int, int Type, int Kill, int Kill_Type, int Change_To_King)
 {
     Move_Node* Curr_Move = Makenode();
 
@@ -40,7 +47,7 @@ void Insert_move(Game_Spec* Game, char Initial_Char, char Final_Char, int Initia
     Curr_Move->Type = Type;
     Curr_Move->Kill = Kill;
     Curr_Move->Kill_Type = Kill_Type;
-
+    Curr_Move->Change_To_King = Change_To_King;
     Curr_Move->Next = NULL;
     Curr_Move->Prev = Game->Last_Move;
     Game->Last_Move->Next=Curr_Move;
@@ -73,11 +80,7 @@ void Insert_move(Game_Spec* Game, char Initial_Char, char Final_Char, int Initia
     return;
 }
 
-void swap(int * a , int * b){
-    int temp=*a;
-    *a=*b;
-    *b=temp;
-}
+
 
 
 void Undo(int u[8][8] , struct Game_Spec* G){
@@ -91,6 +94,8 @@ void Undo(int u[8][8] , struct Game_Spec* G){
     int B3=B2-'A';
     swap(&u[A1][A3],&u[B1][B3]);
     if(G->Last_Move->Kill==1){u[(A1+B1)/2][(A3+B3)/2]=G->Last_Move->Kill_Type;}
+    if(G->Last_Move->Change_To_King==1&&u[A1][A3]==2){u[A1][A3]=1;}
+    if(G->Last_Move->Change_To_King==1&&u[A1][A3]==-2){u[A1][A3]=-1;}
     struct Change* Temp = G -> Last_Move;
     
     G->Last_Move=Temp->Prev;
@@ -216,12 +221,12 @@ void Move(int u[8][8],int* Player, Game_Spec* g){
         if(val==0&&FLAG==2){printf("WRONG INPUT\n");continue;}
         
         //here we are checking if the moved coin transformed to king or not
-        if(D2==0&&u[D2][Cl2]==1){u[D2][Cl2]=2;Change_To_King=1;g->Num_White_King++;}
-        if(D2==7&&u[D2][Cl2]==-1){u[D2][Cl2]=-2;Change_To_King=1;g->Num_Black_King++;}
+        if(D2==0&&u[D1][Cl1]==1){u[D1][Cl1]=2;Change_To_King=1;g->Num_White_King++;}
+        if(D2==7&&u[D1][Cl1]==-1){u[D1][Cl1]=-2;Change_To_King=1;g->Num_Black_King++;}
 
 
-        if(val==2){Kill_Type=u[(D1+D2)/2][(Cl1+Cl2)/2]=0;Kill=1;}
-        Insert_move(g,C1,D1,C2,D2,u[Cl1][D1],Kill,Kill_Type);
+        if(val==2){Kill_Type=u[(D1+D2)/2][(Cl1+Cl2)/2];Kill=1;}
+        Insert_move(g,C1,C2,D1,D2,u[D1][Cl1],Kill,Kill_Type,Change_To_King);
         //here we are swapping the final and initial squares
         swap(&u[D1][Cl1],&u[D2][Cl2]);
 
