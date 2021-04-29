@@ -6,11 +6,11 @@
 #include<stdlib.h>
 #include<assert.h>
 
-#define empty 0
-#define white 1
-#define black -1
-#define white_king  2
-#define black_king -2
+#define EMPTY 0
+#define WHITE 1
+#define BLACK -1
+#define WHITE_KING  2
+#define BLACK_KING -2
 
 
 typedef struct Change
@@ -25,8 +25,8 @@ typedef struct Change
     int Change_To_King ;
     struct Change* Next;                    // since its a linked list
     struct Change* Prev;
-}Move_Node;
 
+}Move_Node;
                                                 
 typedef struct Game_Spec                    // this struct stores basic info
 {
@@ -39,6 +39,7 @@ typedef struct Game_Spec                    // this struct stores basic info
     int Num_White_King; 
     struct Change* Moves;                 // this is the linked list which stores all the moves
     struct Change* Last_Move;             // this points to the last move , (helps in UNDO func)  
+
 }Game_Spec;
 
 //checkers.c
@@ -50,7 +51,10 @@ void Undo(int u[8][8] , struct Game_Spec* g);
 int CheckMove(int u[8][8],int n1, int c1, int n2, int c2, int d, int player);    // c1 is letter1,c2 is letter 2, n1,n2 are the first and the second numbers
 void Init(int u[8][8]);
 void Move(int u[8][8],int* player, Game_Spec* g);
+void Save(int u[8][8], int Player, Game_Spec* G);                               // Allows user to Save the Current Game 
+void Load_Saved_Game(char Name_Of_Game[105], Game_Spec* G, int u[8][8], int *Player);                     // Allows user to Reload a Saved Game
 
+// Print_Board.c
 void Print_Board(int u[8][8],int r);
 void Print_Num(int u[8][8]);
 
