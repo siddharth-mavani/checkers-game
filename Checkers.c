@@ -14,7 +14,7 @@ Move_Node *Makenode(void){
     Move_Node *Temp = (Move_Node *)malloc(sizeof(Move_Node));
     assert(Temp != NULL);
 
-    Temp->Next = NULL;
+    Temp -> Next = NULL;
 
     return Temp;
 }
@@ -24,40 +24,36 @@ Game_Spec *Init_Game(int Auto_Rotate, int Compulsory_Capture, int Num_Moves, int
     Game_Spec *Game = (Game_Spec *)malloc(sizeof(Game_Spec));
     assert(Game != NULL);
 
-    Game->Auto_Rotate = Auto_Rotate;
-    Game->Compulsory_Capture = Compulsory_Capture;
-    Game->Num_Moves = Num_Moves;
-    Game->Num_Black = Num_Black;
-    Game->Num_White = Num_White;
-    Game->Num_Black_King = Num_Black_King;
-    Game->Num_White_King = Num_White_King;
-    Game->Moves = Makenode();
-    Game->Moves->Next = NULL;
-    Game->Last_Move = Game->Moves;
+    Game -> Auto_Rotate = Auto_Rotate;
+    Game -> Compulsory_Capture = Compulsory_Capture;
+    Game -> Num_Moves = Num_Moves;
+    Game -> Num_Black = Num_Black;
+    Game -> Num_White = Num_White;
+    Game -> Num_Black_King = Num_Black_King;
+    Game -> Num_White_King = Num_White_King;
+    Game -> Moves = Makenode();
+    Game -> Moves->Next = NULL;
+    Game -> Last_Move = Game->Moves;
 
     return Game;
 }
 
 void Insert_move(Game_Spec *Game, char Initial_Char, char Final_Char, int Initial_Int, int Final_Int, int Type, int Kill, int Kill_Type, int Change_To_King){
     
-
-    printf("CHECK 1\n");
-
     Move_Node *Curr_Move = Makenode();
+    Curr_Move -> Initial_Char = Initial_Char;
+    Curr_Move -> Final_Char = Final_Char;
+    Curr_Move -> Initial_Int = Initial_Int;
+    Curr_Move -> Final_Int = Final_Int;
+    Curr_Move -> Type = Type;
+    Curr_Move -> Kill = Kill;
+    Curr_Move -> Kill_Type = Kill_Type;
+    Curr_Move -> Change_To_King = Change_To_King;
 
-    Curr_Move->Initial_Char = Initial_Char;
-    Curr_Move->Final_Char = Final_Char;
-    Curr_Move->Initial_Int = Initial_Int;
-    Curr_Move->Final_Int = Final_Int;
-    Curr_Move->Type = Type;
-    Curr_Move->Kill = Kill;
-    Curr_Move->Kill_Type = Kill_Type;
-    Curr_Move->Change_To_King = Change_To_King;
-
-    Curr_Move->Next = NULL;
-    Curr_Move->Prev = Game->Last_Move;
-    Game->Last_Move->Next = Curr_Move;
-    Game->Last_Move = Curr_Move;
+    Curr_Move -> Next = NULL;
+    Curr_Move -> Prev = Game->Last_Move;
+    Game -> Last_Move->Next = Curr_Move;
+    Game -> Last_Move = Curr_Move;
 
     // if(Game->Last_Move == NULL)
     // {
@@ -113,7 +109,6 @@ void Undo(int u[8][8], struct Game_Spec *G){
 
     G->Last_Move = Temp->Prev;
     G->Last_Move->Next = NULL;
-    printf("CHECK\n");
     free(Temp);
     G->Num_Moves--;
 
@@ -354,7 +349,7 @@ void Save(int u[8][8], int Player, Game_Spec* G){
 
 
 // Allows user to Reload a Saved Game
-void Load_Saved_Game(char Name_Of_Game[105], Game_Spec* G, int u[8][8], int *Player){
+Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player){
 
     FILE* fp;                                           // Pointer to File
     fp = fopen(Name_Of_Game, "r");                      // Opens Saved File in Read Mode
@@ -369,23 +364,23 @@ void Load_Saved_Game(char Name_Of_Game[105], Game_Spec* G, int u[8][8], int *Pla
 
     fscanf(fp, "%d", Player);                           // Reads Player turn
 
+    Game_Spec* G;                                       // Initialising Linked List to Store Game Data
     G = (Game_Spec *)malloc(sizeof(Game_Spec));         // Allocating memory for G
     assert(G != NULL);                                  // Checking if memory is available
+    
+    int Num_Moves;                                      // This variable stores Number of Moves made in the Saved Game
 
     // Reading Game-Specs;
-    fscanf(fp, "%d ", &G -> Auto_Rotate);               // Writes Auto Rotate Mode
-    fscanf(fp, "%d ", &G -> Compulsory_Capture);        // Writes Compulsory_Capture Mode
-    fscanf(fp, "%d ", &G -> Num_Moves);                 // Writes Number of Moves
-    fscanf(fp, "%d ", &G -> Num_Black);                 // Writes Number of Black Tokens
-    fscanf(fp, "%d ", &G -> Num_White);                 // Writes Number of White Tokens
-    fscanf(fp, "%d ", &G -> Num_Black_King);            // Writes Number of Black King Tokens
-    fscanf(fp, "%d ", &G -> Num_White_King);            // Writes Number of White King Tokens
-
+    fscanf(fp, "%d ", &G -> Auto_Rotate);               // Reads Auto Rotate Mode
+    fscanf(fp, "%d ", &G -> Compulsory_Capture);        // Reads Compulsory_Capture Mode
+    fscanf(fp, "%d ", &Num_Moves);                      // Reads Number of Moves Made in the Saved Game
+    fscanf(fp, "%d ", &G -> Num_Black);                 // Reads Number of Black Tokens
+    fscanf(fp, "%d ", &G -> Num_White);                 // Reads Number of White Tokens
+    fscanf(fp, "%d ", &G -> Num_Black_King);            // Reads Number of Black King Tokens
+    fscanf(fp, "%d ", &G -> Num_White_King);            // Reads Number of White King Tokens
 
     // Initialising Game Board
-    G = Init_Game(G -> Auto_Rotate, G->Compulsory_Capture, G-> Num_Moves, G -> Num_Black, G->Num_White, G->Num_Black_King, G->Num_White_King);
-
-    int Num_Moves = G -> Num_Moves;                     // This variable stores Number of Moves made in the Saved Game
+    G = Init_Game(G -> Auto_Rotate, G->Compulsory_Capture, 0, 12, 12, 0, 0);
 
     //Initialising Variables of Linked List
     char Initial_Char, Final_Char;
@@ -393,18 +388,62 @@ void Load_Saved_Game(char Name_Of_Game[105], Game_Spec* G, int u[8][8], int *Pla
 
     for(int i = 0; i < Num_Moves; i++){
 
-        fscanf(fp, "%c ", &Initial_Char);               // Writes Character of Inital Coordinate of token (A/B/C/...H)
-        fscanf(fp, "%c ", &Final_Char);                 // Writes Character of Final Coordinate of token (A/B/C/...H)
-        fscanf(fp, "%d ", &Initial_Int);                // Writes Integer of Inital Coordinate of token (1/2/3/...8)
-        fscanf(fp, "%d ", &Final_Int);                  // Writes Integer of Final Coordinate of token (1/2/3/...8)
-        fscanf(fp, "%d ", &Type);                       // Writes the Type of token that is moved
-        fscanf(fp, "%d ", &Kill);                       // Writes whether a Kill was made in this move 
-        fscanf(fp, "%d ", &Kill_Type);                  // Writes the type of Kill
-        fscanf(fp, "%d ", &Change_To_King);             // Writes whehther a regular token was changed to King
+        fscanf(fp, "%c ", &Initial_Char);               // Reads Character of Inital Coordinate of token (A/B/C/...H)
+        fscanf(fp, "%c ", &Final_Char);                 // Reads Character of Final Coordinate of token (A/B/C/...H)
+        fscanf(fp, "%d ", &Initial_Int);                // Reads Integer of Inital Coordinate of token (1/2/3/...8)
+        fscanf(fp, "%d ", &Final_Int);                  // Reads Integer of Final Coordinate of token (1/2/3/...8)
+        fscanf(fp, "%d ", &Type);                       // Reads the Type of token that is moved
+        fscanf(fp, "%d ", &Kill);                       // Reads whether a Kill was made in this move 
+        fscanf(fp, "%d ", &Kill_Type);                  // Reads the type of Kill
+        fscanf(fp, "%d ", &Change_To_King);             // Reads whehther a regular token was changed to King
 
         // Inserting Moves into the Linked List
         Insert_move(G, Initial_Char, Final_Char, Initial_Int, Final_Int, Type, Kill, Kill_Type, Change_To_King);
     }
     
-    return ;
+    return G;
 }                 
+
+
+// This Function simulates the Game
+void Play_Game(int u[8][8], int *Player, Game_Spec *G){
+
+    char Command[100];                                              // This Variable Stores the Command entered by the User
+
+    printf("\n\n");                         
+    Print_Board(u, 0);                                              // Printing Game Board
+
+    while (1){                                                      // Keep Playing Game unitl a Player Quits or Wins
+
+        scanf("%s", Command);                                       // Inputting the Command from the User
+
+        if (strcmp(Command, "MOVE") == 0){                          // Checks if input is 'MOVE'
+            Move(u, Player, G);                                     // If input is 'MOVE', it calls the 'Move' function
+        }
+        else if (strcmp(Command, "UNDO") == 0){                     // Checks if input is 'UNDO'
+            Undo(u, G);                                             // If input is 'UNDO', it calls the 'Undo' function
+        }
+        else if (strcmp(Command, "SAVE") == 0){                     // Checks if input is 'SAVE'
+            Save(u, *Player, G);                                     // If input is 'SAVE', it calls the 'Save' function
+        }
+        else if (strcmp(Command, "QUIT") == 0){                     // Checks if input is 'QUIT'
+
+            char s[5];                                              // This variable stores input
+            printf("Do you want to Save the Game ? ");              // Ask the User if he wants to Save the Game
+            scanf(" %s", s);                                        // Inputting user choice
+
+            if (strcmp(s, "YES") == 0){                             // Checks if input is 'YES'
+                Save(u, *Player, G);                                 // if input is 'YES', it calls the 'Save' function
+                return ;                                            // Exits Game
+            }
+
+            return ;                                                // Quits Game
+        }
+
+        Print_Board(u, 0);                                          // Prints Board at the end of each Command
+        *Player = -*Player;                                         // Toggles player( 1 -> -1 and -1 -> 1 )
+        getchar();                                                  // Clears input buffer
+    }
+
+    return ;
+}
