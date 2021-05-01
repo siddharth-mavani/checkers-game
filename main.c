@@ -1,17 +1,5 @@
 #include "Checkers.h"
 
-// This function returns 1 if Game is availabe, 0 otherwise
-int Name_Is_Available(char Name_Of_Game[105]){
-
-    FILE* fp;                                                           // Pointer to file
-
-    fp = fopen(Name_Of_Game, "r");                                      // Opens file in Read_Mode
-    if(fp == NULL)      return 0;                                       // fp is NULL if <Name_Of_Game> is not available
-    else                return 1;
-
-    fclose(fp);                                                         // Closes file
-}
-
 int main()
 {
     while(1){

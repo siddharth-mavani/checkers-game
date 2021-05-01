@@ -287,7 +287,17 @@ void Move(int u[8][8], int *Player, Game_Spec *G){
     return ;
 }
 
+// This function returns 1 if Game is availabe, 0 otherwise
+int Name_Is_Available(char Name_Of_Game[105]){
 
+    FILE* fp;                                                           // Pointer to file
+
+    fp = fopen(Name_Of_Game, "r");                                      // Opens file in Read_Mode
+    if(fp == NULL)      return 0;                                       // fp is NULL if <Name_Of_Game> is not available
+    else                return 1;
+
+    fclose(fp);                                                         // Closes file
+}
 
 // This Functions allows the user to Save the Current Game 
 void Save(int u[8][8], int Player, Game_Spec* G){
@@ -298,6 +308,16 @@ void Save(int u[8][8], int Player, Game_Spec* G){
     scanf(" %s", Name_Of_Game);                         // Inputting the Game Name
 
     strcat(Name_Of_Game, ".txt");                       // Game will be stored as <Name_Of_Game>.txt 
+
+    // Checking if the Game exists    
+    while(Name_Is_Available(Name_Of_Game)){
+
+        printf("\t The Game does already exists, please enter another name: ");
+        scanf(" %s", Name_Of_Game);                         // Inputting the Game Name
+
+        strcat(Name_Of_Game, ".txt");                       // ".txt" will be added to the end of <Name_Of_Game>  
+                
+    }
 
     FILE *fp;                                           // Pointer to file
     fp = fopen(Name_Of_Game, "w");                      // Opening in write mode. Will write information of game to this file

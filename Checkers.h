@@ -55,7 +55,7 @@ void Move(int u[8][8],int* player, Game_Spec* G);
 void Save(int u[8][8], int Player, Game_Spec* G);                                           // Allows user to Save the Current Game 
 Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player);       // Allows user to Reload a Saved Game
 void Play_Game(int u[8][8], int *Player, Game_Spec *G);                                     // This Function simulates the Game
-
+int Name_Is_Available(char Name_Of_Game[105]);
 
 // Print_Board.c
 void Print_Board(int u[8][8],int r);
