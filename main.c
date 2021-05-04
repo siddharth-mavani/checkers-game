@@ -11,20 +11,20 @@ int main()
         printf("\t 3. Game Settings\n");
         printf("\t 4. Exit Game\n\n");
 
-        int choice;                                                         // This variable will store the choice entered by the user
-        printf("\t Enter your Choice: ");                                   // Asking user to enter choice
-        scanf(" %d", &choice);                                              // Inputting user choice
-
+        int choice;                                                        
+        printf("\t Enter your Choice: ");                                   
+        scanf(" %d", &choice);                                              
+        printf("\n");
         
         // Initialising Variables for Different Variations of the Game
         int Auto_Rotate = 0, Compulsory_Capture = 0, Player = -1;                                           
         int Num_Black = 12, Num_White = 12, Num_White_Kings = 0, Num_Black_Kings = 0;
 
-        if(choice == 1){                                                    // Checks if User wants to Start New Game
-
-                int u[8][8];                                                // Initialising the Game Board                            
-                Game_Spec *G;                                               // This is pointer to Game_Spec, which is Linked List that Stores Game Data
-
+        if(choice == 1){                                                    
+                
+                // Initialising Game board and Linked List
+                int u[8][8];                                                                        
+                Game_Spec *G;
                 
                 // Initialising Game
                 G = Init_Game(Auto_Rotate, Compulsory_Capture, 0, Num_Black, Num_White, Num_Black_Kings, Num_White_Kings);
@@ -33,36 +33,79 @@ int main()
                 Play_Game(u, &Player, G);                                   // This Function simulates the Game
 
         }
-        else if(choice == 2){                                               // Checks if User wants to Load a Saved Game
+        else if(choice == 2){                                               
 
-                int u[8][8];                                                // Initialising the Game Board and Player
-                int Player;                                                 // Initialising Player
-                Game_Spec* G;                                               // This is pointer to Game_Spec, which is Linked List that Stores Game Data
+                // Initialising Game board and Linked List
+                int u[8][8], Player;                                                 
+                Game_Spec* G;
 
-                char Name_Of_Game[105];                                     // This variable stores Game name
-                printf("\t Enter Name of the Game: ");                      // Asking for Game Namae
-                scanf(" %s", Name_Of_Game);                                 // Inputting the Game Name
+                char Name_Of_Game[105];                                     
+                printf("\t Enter Name of the Game: ");                      
+                scanf(" %s", Name_Of_Game);                                 
 
-                strcat(Name_Of_Game, ".txt");                               // ".txt" will be added to the end of <Name_Of_Game> 
+                strcat(Name_Of_Game, ".txt");                               
 
                 // Checking if the Game exists    
                 while(!Name_Is_Available(Name_Of_Game)){
 
                         printf("\t The Game does not exist, please enter a valid name: ");
-                        scanf(" %s", Name_Of_Game);                         // Inputting the Game Name
+                        scanf(" %s", Name_Of_Game);                         
 
-                        strcat(Name_Of_Game, ".txt");                       // ".txt" will be added to the end of <Name_Of_Game>  
+                        strcat(Name_Of_Game, ".txt");                         
                 
                 }
 
-                G = Load_Saved_Game(Name_Of_Game, u, &Player);              // Calling the 'Load_Saved_Game' Function
+                G = Load_Saved_Game(Name_Of_Game, u, &Player);              
                 Play_Game(u, &Player, G);                                   // This Function simulates the Game
         
         }
-        else if(choice == 4){                                               // Checks if User wants to Exit the Game
+        else if(choice == 3){
+
+                printf("\t\t 1. Auto Rotatoe: %s \n", (Auto_Rotate > 0) ?  "ON" :  "OFF");
+                printf("\t\t 2. Compulsory Capture: %s \n", (Compulsory_Capture > 0) ?  "ON" :  "OFF");
+                printf("\t\t 3. Back to Main Menu \n\n");
+                 
+                int choice;
+                while(1){
+                                                                                
+                        printf("\t\t Enter your Choice: ");                                   
+                        scanf(" %d", &choice);
+
+                        if(choice == 1){
+
+                                char s[5];
+                                printf("\t\t Do you want Auto Rotate to be ON ? ");
+                                scanf(" %s", s);
+                                printf("\n");
+
+                                if( strcmp(s, "YES") == 0)
+                                        Auto_Rotate = 1;
+                                else
+                                        Auto_Rotate = 0;
+                        }
+                        else if(choice == 2){
+
+                                char s[5];
+                                printf("\t\t Do you want Compulsory Capture to be ON ? ");
+                                scanf(" %s", s);
+                                printf("\n");
+
+                                if( strcmp(s, "YES") == 0)
+                                        Compulsory_Capture = 1;
+                                else
+                                        Compulsory_Capture = 0;
+
+                        }
+                        else{
+                                break;
+                        }
+                }
+
+        }
+        else if(choice == 4){                                               
 
                 printf("\t Thank you for playing this game, hope you enjoyed :) ");
-                break;                                                    // Exits the loop
+                break;                                                    
 
         }
     }
