@@ -2,6 +2,9 @@
 
 int main()
 {
+        // Initialising Variables for Different Variations of the Game
+        int Auto_Rotate = 1, Compulsory_Capture = 0, Player = -1;                                           
+        int Num_Black = 12, Num_White = 12, Num_White_Kings = 0, Num_Black_Kings = 0;
     while(1){
     
         // Printing the Start Menu of the Game
@@ -16,9 +19,6 @@ int main()
         scanf(" %d", &choice);                                              
         printf("\n");
         
-        // Initialising Variables for Different Variations of the Game
-        int Auto_Rotate = 0, Compulsory_Capture = 0, Player = -1;                                           
-        int Num_Black = 12, Num_White = 12, Num_White_Kings = 0, Num_Black_Kings = 0;
 
         if(choice == 1){                                                    
                 
@@ -61,12 +61,13 @@ int main()
         }
         else if(choice == 3){
 
-                printf("\t\t 1. Auto Rotatoe: %s \n", (Auto_Rotate > 0) ?  "ON" :  "OFF");
-                printf("\t\t 2. Compulsory Capture: %s \n", (Compulsory_Capture > 0) ?  "ON" :  "OFF");
-                printf("\t\t 3. Back to Main Menu \n\n");
                  
                 int choice;
                 while(1){
+
+                        printf("\t\t 1. Auto Rotatoe: %s \n", (Auto_Rotate > 0) ?  "ON" :  "OFF");
+                        printf("\t\t 2. Compulsory Capture: %s \n", (Compulsory_Capture > 0) ?  "ON" :  "OFF");
+                        printf("\t\t 3. Back to Main Menu \n\n");
                                                                                 
                         printf("\t\t Enter your Choice: ");                                   
                         scanf(" %d", &choice);

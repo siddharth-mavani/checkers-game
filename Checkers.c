@@ -77,11 +77,11 @@ void Insert_move(Game_Spec *Game, char Initial_Char, char Final_Char, int Initia
     return ;
 }
 
-void Undo(int u[8][8], struct Game_Spec *G){
+int Undo(int u[8][8], struct Game_Spec *G){
 
     if (G->Num_Moves == 0){
         printf("NO MOVES LEFT TO UNDO\n");
-        return;
+        return 0;
     }
 
     int A1 = G->Last_Move->Initial_Int;
@@ -112,7 +112,7 @@ void Undo(int u[8][8], struct Game_Spec *G){
     free(Temp);
     G->Num_Moves--;
 
-    return ;
+    return 1;
 }
 
 int CheckMove(int u[8][8], int N1, int C1, int N2, int C2, int D, int Player){ 
@@ -207,7 +207,7 @@ void print_ll(Game_Spec *g)
     }
 }
 
-void Move(int u[8][8], int *Player, Game_Spec *G){
+int Move(int u[8][8], int *Player, Game_Spec *G){
     int FLAG = 0;
     char C1;
     int D1;
@@ -227,7 +227,7 @@ void Move(int u[8][8], int *Player, Game_Spec *G){
             printf("DO YOU WANT TO MAKE A SUCCESSIVE CAPTURE(ENTER Y OR N):  ");
             scanf("\n%c", &c);
             if (c == 'N'){
-                return;
+                return 1;
             }
             if (c == 'Y'){
                 printf("ENTER CORDINATES OF THE FINAL SQUARE: ");
@@ -255,7 +255,7 @@ void Move(int u[8][8], int *Player, Game_Spec *G){
         printf("%d is value returned by CheckMove function \n\n", val);
         if (val == 0 && FLAG != 2){
             printf("WRONG INPUT\n");
-            return;
+            return 0;
         }
         if (val == 0 && FLAG == 2){
             printf("WRONG INPUT\n");
@@ -296,7 +296,7 @@ void Move(int u[8][8], int *Player, Game_Spec *G){
         Done = 1;
     } while (Done == 0);
 
-    return ;
+    return 1;
 }
 
 // This function returns 1 if Game is availabe, 0 otherwise
@@ -451,9 +451,10 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
     scanf(" %s", NameOfPlayer2);
 
     char Command[100];                                              
-
+    int r = -1;
+    if(G->Auto_Rotate){r=1;}
     printf("\n\n");                         
-    Print_Board(u, 0);                                              
+    Print_Board(u, r);                                              
 
     while (1){
 
@@ -468,10 +469,19 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
         scanf("%s", Command);                                      
 
         if (strcmp(Command, "MOVE") == 0){                          
-            Move(u, Player, G);                                     
+            if(Move(u, Player, G)){
+                *Player = -*Player;                                         // Toggles player( 1 -> -1 and -1 -> 1 )
+                
+                if(G->Auto_Rotate){r=-r;}
+                Print_Board(u, r); 
+            }                                     
         }
         else if (strcmp(Command, "UNDO") == 0){                     
-            Undo(u, G);                                             
+            if(Undo(u, G)){
+                *Player = -*Player;                                         // Toggles player( 1 -> -1 and -1 -> 1 )
+                if(G->Auto_Rotate){r=-r;}
+                Print_Board(u, r); 
+            }                                             
         }
         else if (strcmp(Command, "SAVE") == 0){                     
             Save(u, *Player, G);                                     
@@ -490,11 +500,9 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
             return ;                                                
         }
 
-        Print_Board(u, 0); 
         //print_ll(G);                                                
 
-        *Player = -*Player;                                         // Toggles player( 1 -> -1 and -1 -> 1 )
-        printf("%d\n",*Player);                                     
+                                            
         getchar();                                                  
     }
 
