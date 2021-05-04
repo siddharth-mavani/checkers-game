@@ -451,37 +451,44 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
     scanf(" %s", NameOfPlayer2);
 
     char Command[100];                                              
-    int r = -1;
-    if(G->Auto_Rotate){r=1;}
+    int Board_Orientation = 1;
+
     printf("\n\n");                         
-    Print_Board(u, r);                                              
+    Print_Board(u, Board_Orientation);                                              
 
     while (1){
 
         // Printing Player Turn
         if (*Player > 0){
-            printf("\t %s's Chance\t\t\t%s PLAYS WHITE \n", NameOfPlayer2, NameOfPlayer2);
+            printf("\n\t %s's Chance\t\t\t%s PLAYS WHITE \n", NameOfPlayer2, NameOfPlayer2);
         }
         if (*Player < 0){
-            printf("\t %s's CHANCE\t\t\t%s PLAYS BLACK \n", NameOfPlayer1, NameOfPlayer1);
+            printf("\n\t %s's CHANCE\t\t\t%s PLAYS BLACK \n", NameOfPlayer1, NameOfPlayer1);
         }
 
         scanf("%s", Command);                                      
 
-        if (strcmp(Command, "MOVE") == 0){                          
+        if (strcmp(Command, "MOVE") == 0){  
             if(Move(u, Player, G)){
-                *Player = -*Player;                                         // Toggles player( 1 -> -1 and -1 -> 1 )
                 
-                if(G->Auto_Rotate){r=-r;}
-                Print_Board(u, r); 
-            }                                     
+                // Switches Player and Board-Orientation
+                *Player = -*Player;                                         
+                if(G->Auto_Rotate){                                         
+                    Board_Orientation = -Board_Orientation;                                                 
+                }
+                Print_Board(u, Board_Orientation); 
+            }   
         }
-        else if (strcmp(Command, "UNDO") == 0){                     
+        else if (strcmp(Command, "UNDO") == 0){   
             if(Undo(u, G)){
-                *Player = -*Player;                                         // Toggles player( 1 -> -1 and -1 -> 1 )
-                if(G->Auto_Rotate){r=-r;}
-                Print_Board(u, r); 
-            }                                             
+
+                // Switches Player and Board-Orientation
+                *Player = -*Player;                                         
+                if(G->Auto_Rotate){
+                    Board_Orientation = -Board_Orientation;
+                }
+                Print_Board(u, Board_Orientation); 
+            }   
         }
         else if (strcmp(Command, "SAVE") == 0){                     
             Save(u, *Player, G);                                     
@@ -492,7 +499,7 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
             printf("Do you want to Save the Game ? ");              
             scanf(" %s", s);                                        
 
-            if (strcmp(s, "YES") == 0){                             
+            if(strcmp(s, "YES") == 0 || strcmp(s, "Y") == 0 || strcmp(s, "yes") == 0 || strcmp(s, "y") == 0){
                 Save(u, *Player, G);                                 
                 return ;                                            
             }

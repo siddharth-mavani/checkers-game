@@ -79,8 +79,9 @@ int main()
                                 scanf(" %s", s);
                                 printf("\n");
 
-                                if( strcmp(s, "YES") == 0)
+                                if(strcmp(s, "YES") == 0 || strcmp(s, "Y") == 0 || strcmp(s, "yes") == 0 || strcmp(s, "y") == 0){
                                         Auto_Rotate = 1;
+                                }
                                 else
                                         Auto_Rotate = 0;
                         }
@@ -91,10 +92,12 @@ int main()
                                 scanf(" %s", s);
                                 printf("\n");
 
-                                if( strcmp(s, "YES") == 0)
+                                if(strcmp(s, "YES") == 0 || strcmp(s, "Y") == 0 || strcmp(s, "yes") == 0 || strcmp(s, "y") == 0){
                                         Compulsory_Capture = 1;
-                                else
+                                }
+                                else{
                                         Compulsory_Capture = 0;
+                                }
 
                         }
                         else{
