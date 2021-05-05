@@ -436,6 +436,132 @@ Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player){
     return G;
 }                 
 
+void game_review(struct Game_Spec *g, int* Player)
+{
+    if (g->Num_Moves == 0)
+    {
+        printf("NO MOVES TILL THIS POINT\n");
+        return;
+    }
+    int temp[8][8];
+    Init(temp);
+    char c;
+    struct Change *curr = g->Moves->Next;
+    int orientation = g->Board_Orientation;
+
+    Print_Board(temp, g, *Player);
+    printf("COMMANDS:\n          ENTER N FOR NEXT STEP \n          ENTER P FOR PREVIOUS STEP\n          ENTER Q TO STOP REVIEWING\n\n");
+    printf("YOUR CHOICE: ");
+    scanf(" %c", &c);
+
+    if (c == 'P')
+    {
+        while (1)
+        {
+            printf("\nNO MORE PREVIOUS STEPS ARE LEFT\n\n");
+            printf("COMMANDS:\n          ENTER N FOR NEXT STEP \n          ENTER P FOR PREVIOUS STEP\n          ENTER Q TO STOP REVIEWING\n\n");
+            printf("YOUR CHOICE: ");
+            scanf(" %c", &c);
+            if(c != 'P')
+                break;
+        }
+    }
+    if (c == 'Q')
+    {
+        return;
+    }
+    //orientation *= -1;
+    while (curr != NULL)
+    {
+        int a1 = curr->Initial_Int;
+        int b1 = curr->Final_Int;
+        char a2 = curr->Initial_Char;
+        char b2 = curr->Final_Char;
+        int a3 = a2 - 'A';
+        int b3 = b2 - 'A';
+        if (curr->Change_To_King && c == 'N')
+        {
+            temp[a1][a3] = 2 * temp[a1][a3];
+        }
+        if (curr->Change_To_King && c == 'P')
+        {
+            temp[b1][b3] = temp[b1][b3] / 2;
+        }
+        if (curr->Kill && c == 'N')
+        {
+            temp[(a1 + b1) / 2][(a3 + b3) / 2] = 0;
+        }
+        if (curr->Kill && c == 'P')
+        {
+            temp[(a1 + b1) / 2][(a3 + b3) / 2] = curr->Kill_Type;
+        }
+        swap(&temp[a1][a3], &temp[b1][b3]);
+        Print_Board(temp, g, *Player);
+        //orientation *= -1;
+
+    H1:
+        printf("COMMANDS:\n          ENTER N FOR NEXT STEP \n          ENTER P FOR PREVIOUS STEP\n          ENTER Q TO STOP REVIEWING\n\n");
+        int flag = 0;
+        if (c == 'N')
+        {
+            flag = 1;
+        }
+        printf("YOUR CHOICE: ");
+        scanf(" %c", &c);
+        if (c == 'P' && curr == g->Moves->Next && !flag)
+        {
+            printf("NO MORE PREVIOUS STEPS ARE LEFT\n");
+            goto H1;
+        }
+
+        if (c == 'N' && flag)
+        {
+            if (curr->Next == NULL)
+            {
+                char response;
+                printf("THE BOARD IS AT THE CURRENT MOVE/SITUATION. \nWOULD YOU LIKE THE REVIEW TO END OR YOU WISH TO GO TO THE PREVIOUS MOVE?\n");
+                printf("ENTER YOUR CHOICE(Y TO EXIT, and P TO GO TO THE PREVIOUS MOVE: ");
+                scanf(" %c", &response);
+                if (response == 'Y')
+                {
+                    return;
+                }
+                if (response == 'P')
+                {
+                    curr = curr;
+                    c = 'P';
+                }
+            }
+            else
+                curr = curr->Next;
+        }
+        else if (c == 'N' && !flag)
+        {
+            curr;
+        }
+        else if (c == 'P' && flag)
+        {
+            curr = curr;
+        }
+        else if (c == 'P' && !flag)
+        {
+
+            curr = curr->Prev;
+        }
+        if (c == 'Q')
+        {
+            return;
+        }
+
+        // swap(&temp[a1][a3], &temp[b1][b3]);
+        // Print_Board(temp, orientation);
+        //printf("RR  %c\n", c);
+    }
+
+    return;
+}
+
+
 
 // This Function simulates the Game
 void Play_Game(int u[8][8], int *Player, Game_Spec *G){
@@ -451,31 +577,13 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
 
         if (strcmp(Command, "MOVE") == 0){  
             if(Move(u, Player, G)){
-                if(endgame(G,u,-(*Player)))
-                {
-                    Print_Board(u,G,*Player);
-                    if ( *Player<0) //black has won
-                    { 
-                    	printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player1);
-                    	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player2);
-                    }
-                    else
-                    {
-                        printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player2);
-                    	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player1);
-                    }
-                    
-                    return;
+                
+                // Switches Player and Board-Orientation
+                *Player = -*Player;                                         
+                if(G->Auto_Rotate){                                         
+                    G -> Board_Orientation = -G -> Board_Orientation;                                                 
                 }
-                else
-                {
-		        // Switches Player and Board-Orientation
-		        *Player = -*Player;                                         
-		        if(G->Auto_Rotate){                                         
-		            G -> Board_Orientation = -G -> Board_Orientation;                                                 
-		        }
-		        Print_Board(u, G, *Player);
-                } 
+                Print_Board(u, G, *Player); 
             }   
         }
         else if (strcmp(Command, "UNDO") == 0){   
@@ -491,6 +599,12 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
         }
         else if (strcmp(Command, "SAVE") == 0){                     
             Save(u, *Player, G);                                     
+        }
+        else if(strcmp(Command, "REVIEW") == 0)
+        {
+            game_review(G, Player);
+            printf("\nTHE REVIEW HAS BEEN COMPLETED AND THE CURRENT SITUATION OF THE BOARD IS:\n\n");
+            Print_Board(u, G, *Player);
         }
         else if (strcmp(Command, "QUIT") == 0){                     
 
