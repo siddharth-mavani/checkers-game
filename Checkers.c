@@ -19,7 +19,7 @@ Move_Node *Makenode(void){
     return Temp;
 }
 
-Game_Spec *Init_Game(int Auto_Rotate, int Compulsory_Capture, int Num_Moves, int Num_Black, int Num_White, int Num_Black_King, int Num_White_King){
+Game_Spec *Init_Game(int Auto_Rotate, int Compulsory_Capture, int Num_Moves, int Num_Black, int Num_White, int Num_Black_King, int Num_White_King, int Board_Orientation, char Name_Of_Player1[100], char Name_Of_Player2[100]){
     
     Game_Spec *Game = (Game_Spec *)malloc(sizeof(Game_Spec));
     assert(Game != NULL);
@@ -31,6 +31,10 @@ Game_Spec *Init_Game(int Auto_Rotate, int Compulsory_Capture, int Num_Moves, int
     Game -> Num_White = Num_White;
     Game -> Num_Black_King = Num_Black_King;
     Game -> Num_White_King = Num_White_King;
+    Game -> Board_Orientation = Board_Orientation;
+    strcpy(Game -> Name_Of_Player1, Name_Of_Player1);
+    strcpy(Game -> Name_Of_Player2, Name_Of_Player2);
+
     Game -> Moves = Makenode();
     Game -> Moves->Next = NULL;
     Game -> Last_Move = Game->Moves;
@@ -55,24 +59,7 @@ void Insert_move(Game_Spec *Game, char Initial_Char, char Final_Char, int Initia
     Game -> Last_Move->Next = Curr_Move;
     Game -> Last_Move = Curr_Move;
 
-    // if(Game->Last_Move == NULL)
-    // {
-    //     Game->Moves->Next = Curr_Move;
-    //     Curr_Move->Prev = Game->Moves;
-    //     Game->Last_Move = Curr_Move;
-    // }
-    // else{
-    //     Game->Last_Move->Next = Curr_Move;
-    //     Curr_Move->Prev = Game->Last_Move;
-    // }
-
     Game->Num_Moves++;
-
-    // needs attention here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // Game->num_black;
-    // Game->num_black_king;
-    // Game->num_white;
-    // Game->Num_White_King;
 
     return ;
 }
@@ -350,7 +337,10 @@ void Save(int u[8][8], int Player, Game_Spec* G){
     fprintf(fp, "%d ", G -> Num_Black);                 
     fprintf(fp, "%d ", G -> Num_White);                 
     fprintf(fp, "%d ", G -> Num_Black_King);            
-    fprintf(fp, "%d ", G -> Num_White_King);            
+    fprintf(fp, "%d ", G -> Num_White_King);
+    fprintf(fp, "%d ", G -> Board_Orientation);
+    fprintf(fp, "%s ", G -> Name_Of_Player1);
+    fprintf(fp, "%s ", G -> Name_Of_Player2);            
 
     struct Change* Temp  = G -> Last_Move;              // Pointer to Doubly Linked List that stores Move History
 
@@ -397,23 +387,29 @@ Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player){
 
     fscanf(fp, "%d", Player);                           // Reads Player turn
 
-    Game_Spec* G;                                       // Initialising Linked List to Store Game Data
-    G = (Game_Spec *)malloc(sizeof(Game_Spec));         
-    assert(G != NULL);                                  
-    
-    int Num_Moves;    
+    // Initialising Variables for Different Variations of the Game
+    int Auto_Rotate, Compulsory_Capture, Board_Orientation;                                           
+    int Num_Black , Num_White , Num_White_Kings, Num_Black_Kings, Num_Moves;
+    char Name_Of_Player1[100], Name_Of_Player2[100];                                    
 
     // Reading Game-Specs;
-    fscanf(fp, "%d ", &G -> Auto_Rotate);               
-    fscanf(fp, "%d ", &G -> Compulsory_Capture);        
+    fscanf(fp, "%d ", &Auto_Rotate);               
+    fscanf(fp, "%d ", &Compulsory_Capture);        
     fscanf(fp, "%d ", &Num_Moves);                      
-    fscanf(fp, "%d ", &G -> Num_Black);                 
-    fscanf(fp, "%d ", &G -> Num_White);                 
-    fscanf(fp, "%d ", &G -> Num_Black_King);            
-    fscanf(fp, "%d ", &G -> Num_White_King);            
+    fscanf(fp, "%d ", &Num_Black);                 
+    fscanf(fp, "%d ", &Num_White);                 
+    fscanf(fp, "%d ", &Num_Black_Kings);            
+    fscanf(fp, "%d ", &Num_White_Kings);
+    fscanf(fp, "%d ", &Board_Orientation);
+    fscanf(fp, "%s ", Name_Of_Player1);
+    fscanf(fp, "%s ", Name_Of_Player2); 
 
     // Initialising Game Board
-    G = Init_Game(G -> Auto_Rotate, G->Compulsory_Capture, 0, 12, 12, 0, 0);
+    Game_Spec* G;                                       
+    G = Init_Game(Auto_Rotate, Compulsory_Capture, 0, Num_Black, Num_White, Num_Black_Kings, Num_White_Kings, Board_Orientation, Name_Of_Player1, Name_Of_Player2);
+
+    printf("Num_Moves: %d\n", G -> Num_Moves);
+
 
     //Initialising Variables of Linked List
     char Initial_Char, Final_Char;
@@ -434,7 +430,9 @@ Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player){
         // Inserting Moves into the Linked List
         Insert_move(G, Initial_Char, Final_Char, Initial_Int, Final_Int, Type, Kill, Kill_Type, Change_To_King);
     }
-    
+
+    printf("Num_Moves: %d\n", G -> Num_Moves);
+
     return G;
 }                 
 
@@ -442,29 +440,12 @@ Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player){
 // This Function simulates the Game
 void Play_Game(int u[8][8], int *Player, Game_Spec *G){
 
-    char NameOfPlayer1[100];
-    char NameOfPlayer2[100];
-
-    printf("\t Enter Name of Player 1: ");
-    scanf(" %s", NameOfPlayer1);
-    printf("\t Enter Name of Player 2: ");
-    scanf(" %s", NameOfPlayer2);
-
     char Command[100];                                              
-    int Board_Orientation = 1;
 
     printf("\n\n");                         
-    Print_Board(u, Board_Orientation);                                              
+    Print_Board(u, G, *Player);                                              
 
     while (1){
-
-        // Printing Player Turn
-        if (*Player > 0){
-            printf("\n\t %s's Chance\t\t\t%s PLAYS WHITE \n", NameOfPlayer2, NameOfPlayer2);
-        }
-        if (*Player < 0){
-            printf("\n\t %s's CHANCE\t\t\t%s PLAYS BLACK \n", NameOfPlayer1, NameOfPlayer1);
-        }
 
         scanf("%s", Command);                                      
 
@@ -474,9 +455,9 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
                 // Switches Player and Board-Orientation
                 *Player = -*Player;                                         
                 if(G->Auto_Rotate){                                         
-                    Board_Orientation = -Board_Orientation;                                                 
+                    G -> Board_Orientation = -G -> Board_Orientation;                                                 
                 }
-                Print_Board(u, Board_Orientation); 
+                Print_Board(u, G, *Player); 
             }   
         }
         else if (strcmp(Command, "UNDO") == 0){   
@@ -485,9 +466,9 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
                 // Switches Player and Board-Orientation
                 *Player = -*Player;                                         
                 if(G->Auto_Rotate){
-                    Board_Orientation = -Board_Orientation;
+                    G -> Board_Orientation = -G -> Board_Orientation;
                 }
-                Print_Board(u, Board_Orientation); 
+                Print_Board(u, G, *Player); 
             }   
         }
         else if (strcmp(Command, "SAVE") == 0){                     

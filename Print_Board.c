@@ -32,8 +32,6 @@ void get_instruction(int i, char** instruction){
     strcpy(*instruction, ins[i]);
 }
 
-
-
 void print_row(int type){
 
     if(type == 1){
@@ -46,12 +44,12 @@ void print_row(int type){
     return ;
 }
 
-void Print_Board(int u[8][8], int r){
+void Print_Board(int u[8][8], Game_Spec* G, int Player){
 
     char* instruction;
     instruction = (char*)malloc(sizeof(char)*100);
 
-    if(r == -1){
+    if(G -> Board_Orientation == -1){
 
         printf("\t    A    B    C    D    E    F    G    H \n");
 
@@ -131,9 +129,7 @@ void Print_Board(int u[8][8], int r){
         }
         printf("\t    A    B    C    D    E    F    G    H \n");
     }
-
-
-    if(r == 1){
+    else if(G -> Board_Orientation == 1){
 
         printf("\t    H    G    F    E    D    C    B    A \n");
 
@@ -213,6 +209,13 @@ void Print_Board(int u[8][8], int r){
         printf("\t    H    G    F    E    D    C    B    A \n");
     }
 
+    // Printing Player Turn
+    if (Player > 0){
+        printf("\n\t %s's Chance\t\t\t%s PLAYS WHITE \n", G -> Name_Of_Player2, G -> Name_Of_Player2);
+    }
+    else if (Player < 0){
+        printf("\n\t %s's CHANCE\t\t\t%s PLAYS BLACK \n", G -> Name_Of_Player1, G -> Name_Of_Player1);
+    }
     return ;
 }
 
