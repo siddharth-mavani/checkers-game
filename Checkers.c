@@ -577,13 +577,25 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
 
         if (strcmp(Command, "MOVE") == 0){  
             if(Move(u, Player, G)){
-                
-                // Switches Player and Board-Orientation
-                *Player = -*Player;                                         
-                if(G->Auto_Rotate){                                         
-                    G -> Board_Orientation = -G -> Board_Orientation;                                                 
+                if(endgame(G,u,-(*Player)))
+                {
+                    Print_Board(u,G,*Player);
+                    if ( *Player<0) //black has won
+                    { 
+                    	printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player1);
+                    	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player2);
+                    }
+                    return;
                 }
-                Print_Board(u, G, *Player); 
+                else
+                {
+                    // Switches Player and Board-Orientation
+                    *Player = -*Player;                                         
+                    if(G->Auto_Rotate){                                         
+                        G -> Board_Orientation = -G -> Board_Orientation;                                                 
+		            }
+		            Print_Board(u, G, *Player);
+                } 
             }   
         }
         else if (strcmp(Command, "UNDO") == 0){   
@@ -618,6 +630,14 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
             }
 
             return ;                                                
+        }
+        else if(strcmp(Command,"SUGGEST")==0)
+        {
+            char c;
+            int x;
+            scanf(" %c%d",&c,&x);
+            if(!PossibleMoves(c,x,u,*Player,true))
+                printf("No Moves Possible!!\n");
         }
 
         //print_ll(G);                                                
