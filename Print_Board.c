@@ -47,7 +47,6 @@ void print_row(int type){
 }
 
 void Print_Board(int u[8][8], Game_Spec* G, int Player){
-    system("clear");
     char* instruction;
     instruction = (char*)malloc(sizeof(char)*100);
 
