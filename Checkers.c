@@ -71,25 +71,25 @@ int Undo(int u[8][8], struct Game_Spec *G){
         return 0;
     }
 
-    int A1 = G->Last_Move->Initial_Int;
-    int B1 = G->Last_Move->Final_Int;
-    char A2 = G->Last_Move->Initial_Char;
-    char B2 = G->Last_Move->Final_Char;
-    int A3 = A2 - 'A';
-    int B3 = B2 - 'A';
+    int InitialInt = G->Last_Move->Initial_Int;
+    int FinalInt = G->Last_Move->Final_Int;
+    char InitialChar = G->Last_Move->Initial_Char;
+    char FinalChar = G->Last_Move->Final_Char;
+    int InitialCharToInt = InitialChar - 'A';
+    int FinalCharToInt = FinalChar - 'A';
 
-    swap(&u[A1][A3], &u[B1][B3]);
+    swap(&u[InitialInt][InitialCharToInt], &u[FinalInt][FinalCharToInt]);
 
     if (G->Last_Move->Kill == 1){
-        u[(A1 + B1) / 2][(A3 + B3) / 2] = G->Last_Move->Kill_Type;
+        u[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2] = G->Last_Move->Kill_Type;
     }
 
-    if (G->Last_Move->Change_To_King == 1 && u[A1][A3] == WHITE_KING){
-        u[A1][A3] = WHITE;
+    if (G->Last_Move->Change_To_King == 1 && u[InitialInt][InitialCharToInt] == WHITE_KING){
+        u[InitialInt][InitialCharToInt] = WHITE;
     }
 
-    if (G->Last_Move->Change_To_King == 1 && u[A1][A3] == BLACK_KING){
-        u[A1][A3] = BLACK;
+    if (G->Last_Move->Change_To_King == 1 && u[InitialInt][InitialCharToInt] == BLACK_KING){
+        u[InitialInt][InitialCharToInt] = BLACK;
     }
 
     struct Change *Temp = G->Last_Move;
@@ -196,12 +196,12 @@ void print_ll(Game_Spec *g)
 
 int Move(int u[8][8], int *Player, Game_Spec *G){
     int FLAG = 0;
-    char C1;
-    int D1;
-    int Cl1;
-    char C2;
-    int D2;
-    int Cl2;
+    char InitialChar;
+    int InitialInt;
+    int InitialCharToInt;
+    char FinalChar;
+    int FinalInt;
+    int FinalCharToInt;
     int Kill = 0;
     int Kill_Type = 0;
     int Change_To_King = 0;
@@ -224,21 +224,21 @@ int Move(int u[8][8], int *Player, Game_Spec *G){
         // If FLAG!=2 we need to input the coordinates for the initial square , if FLAG=2 we can just use final cord. of last
         // turn as initial coordinates for current turn
         if (FLAG != 2){
-            scanf(" %c%d", &C1, &D1);
-            Cl1 = C1 - 'A';
-            D1--;
+            scanf(" %c%d", &InitialChar, &InitialInt);
+            InitialCharToInt = InitialChar - 'A';
+            InitialInt--;
             char s[9];
             scanf("%s", s);
         }
 
         // Asking for final coordinates
-        scanf(" %c%d", &C2, &D2);
-        Cl2 = C2 - 'A';
-        D2--;
+        scanf(" %c%d", &FinalChar, &FinalInt);
+        FinalCharToInt = FinalChar - 'A';
+        FinalInt--;
 
         // Checking whether move is correct or not and returning 0 is move is incorrect , we must not return if we are making 
         // successive capture
-        int val = CheckMove(u, D1, Cl1, D2, Cl2, FLAG, *Player);
+        int val = CheckMove(u, InitialInt, InitialCharToInt, FinalInt, FinalCharToInt, FLAG, *Player);
         printf("%d is value returned by CheckMove function \n\n", val);
         if (val == 0 && FLAG != 2){
             printf("WRONG INPUT\n");
@@ -250,33 +250,33 @@ int Move(int u[8][8], int *Player, Game_Spec *G){
         }
 
         //here we are checking if the moved coin transformed to king or not
-        if (D2 == 0 && u[D1][Cl1] == WHITE){
-            u[D1][Cl1] = WHITE_KING;
+        if (FinalInt == 0 && u[InitialInt][InitialCharToInt] == WHITE){
+            u[InitialInt][InitialCharToInt] = WHITE_KING;
             Change_To_King = 1;
             G->Num_White_King++;
         }
-        if (D2 == 7 && u[D1][Cl1] == BLACK){
-            u[D1][Cl1] = BLACK_KING;
+        if (FinalInt == 7 && u[InitialInt][InitialCharToInt] == BLACK){
+            u[InitialInt][InitialCharToInt] = BLACK_KING;
             Change_To_King = 1;
             G->Num_Black_King++;
         }
 
         if (val == 2){
-            Kill_Type = u[(D1 + D2) / 2][(Cl1 + Cl2) / 2];
+            Kill_Type = u[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2];
             Kill = 1;
         }
 
-        Insert_move(G, C1, C2, D1, D2, u[D1][Cl1], Kill, Kill_Type, Change_To_King);
+        Insert_move(G, InitialChar, FinalChar, InitialInt, FinalInt, u[InitialInt][InitialCharToInt], Kill, Kill_Type, Change_To_King);
 
         //here we are swapping the final and initial squares
-        swap(&u[D1][Cl1], &u[D2][Cl2]);
+        swap(&u[InitialInt][InitialCharToInt], &u[FinalInt][FinalCharToInt]);
 
         if (val == 2){
-            u[(D1 + D2) / 2][(Cl1 + Cl2) / 2] = EMPTY;
+            u[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2] = EMPTY;
             FLAG = 2;
-            C1 = C2;
-            Cl1 = Cl2;
-            D1 = D2;
+            InitialChar = FinalChar;
+            InitialCharToInt = FinalCharToInt;
+            InitialInt = FinalInt;
             continue;
         }
 

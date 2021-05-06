@@ -1,5 +1,7 @@
 #include "Checkers.h"
 #include<string.h>
+#include<stdlib.h>
+#include<stdio.h>
 
 void get_instruction(int i, char** instruction){
 
@@ -45,7 +47,7 @@ void print_row(int type){
 }
 
 void Print_Board(int u[8][8], Game_Spec* G, int Player){
-
+    system("clear");
     char* instruction;
     instruction = (char*)malloc(sizeof(char)*100);
 
