@@ -105,7 +105,7 @@ int Undo(int u[8][8], struct Game_Spec *G){
 int CheckMove(int u[8][8], int N1, int C1, int N2, int C2, int D, int Player){ 
     
     // C1 is letter1,C2 is letter 2, N1,N2 are the first and the second numbers
-    printf("initial %d %d    final  %d %d    val_ini %d  val_fin %d\n\n", N1, C1, N2, C2, u[N1][C1], u[N2][C2]);
+    //printf("initial %d %d    final  %d %d    val_ini %d  val_fin %d\n\n", N1, C1, N2, C2, u[N1][C1], u[N2][C2]);
 
     if (C1 < 0 || C1 > 7 || N1 < 0 || N1 > 7){
         return 0;
@@ -585,6 +585,11 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
                     	printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player1);
                     	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player2);
                     }
+                    else 
+                    {
+                        printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player2);
+                    	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player1);
+                    }
                     return;
                 }
                 else
@@ -638,6 +643,7 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
             scanf(" %c%d",&c,&x);
             if(!PossibleMoves(c,x,u,*Player,true))
                 printf("No Moves Possible!!\n");
+
         }
 
         //print_ll(G);                                                
