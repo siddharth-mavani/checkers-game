@@ -625,6 +625,11 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
                     	printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player1);
                     	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player2);
                     }
+                    else 
+                    {
+                        printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player2);
+                    	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player1);
+                    }
                     return;
                 }
                 else
