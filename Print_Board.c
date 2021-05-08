@@ -47,6 +47,7 @@ void print_row(int type){
 }
 
 void Print_Board(int u[8][8], Game_Spec* G, int Player){
+    printf("\n\n\n\n\n");
     char* instruction;
     instruction = (char*)malloc(sizeof(char)*100);
 
@@ -217,6 +218,7 @@ void Print_Board(int u[8][8], Game_Spec* G, int Player){
     else if (Player < 0){
         printf("\n\t %s's CHANCE\t\t\t%s PLAYS BLACK \n", G -> Name_Of_Player1, G -> Name_Of_Player1);
     }
+    printf("\n\n\n\n\n");
     return ;
 }
 
