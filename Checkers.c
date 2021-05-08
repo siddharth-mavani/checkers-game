@@ -64,7 +64,7 @@ void Insert_move(Game_Spec *Game, char Initial_Char, char Final_Char, int Initia
     return ;
 }
 
-int SuccessiveCapture(int u[8][8] , int InitialInt , int InitialCharToInt , int Player){
+int SuccessiveCapture(int u[BOARD_SIZE ][BOARD_SIZE ] , int InitialInt , int InitialCharToInt , int Player){
     int num_kill_possible = 0 ;
     num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt+2, InitialCharToInt+2, 0, Player);
     num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt-2, InitialCharToInt-2, 0, Player);
@@ -74,10 +74,10 @@ int SuccessiveCapture(int u[8][8] , int InitialInt , int InitialCharToInt , int 
 
 }
 
-int Undo(int u[8][8], struct Game_Spec *G , int* Player , int CallFromKmoves){
+int Undo(int u[BOARD_SIZE ][BOARD_SIZE ], struct Game_Spec *G , int* Player , int CallFromKmoves){
 
     if (G->Num_Moves == 0){
-        printf("NO MOVES LEFT TO UNDO\n");
+        printf("\t NO MOVES LEFT TO UNDO\n");
         return 0;
     }
 
@@ -110,6 +110,7 @@ int Undo(int u[8][8], struct Game_Spec *G , int* Player , int CallFromKmoves){
     free(Temp);
 
     G->Num_Moves--;
+
     if(G->Last_Move->Kill==1&&CallFromKmoves==0){
         *Player=-*Player;
         if(G->Auto_Rotate){G->Board_Orientation = -G->Board_Orientation; }
@@ -120,7 +121,7 @@ int Undo(int u[8][8], struct Game_Spec *G , int* Player , int CallFromKmoves){
     return 1;
 }
 
-int CheckMove(int u[8][8], int N1, int C1, int N2, int C2, int D, int Player){ 
+int CheckMove(int u[BOARD_SIZE ][BOARD_SIZE ], int N1, int C1, int N2, int C2, int D, int Player){ 
     
     // C1 is letter1,C2 is letter 2, N1,N2 are the first and the second numbers
     //printf("initial %d %d    final  %d %d    val_ini %d  val_fin %d\n\n", N1, C1, N2, C2, u[N1][C1], u[N2][C2]);
@@ -181,16 +182,16 @@ int CheckMove(int u[8][8], int N1, int C1, int N2, int C2, int D, int Player){
     return 0;
 }
 
-void Init(int u[8][8]){
+void Init(int u[BOARD_SIZE ][BOARD_SIZE ]){
 
-    for (int i = 0; i < 8; i++){
-        for (int j = 0; j < 8; j++){
+    for (int i = 0; i < BOARD_SIZE ; i++){
+        for (int j = 0; j < BOARD_SIZE ; j++){
             u[i][j] = EMPTY;
         }
     }
 
     for (int i = 0; i < 3; i++){
-        for (int j = 0; j < 8; j++){
+        for (int j = 0; j < BOARD_SIZE ; j++){
             if ((i + j) % 2 == 1){
                 u[i][j] = BLACK;
                 u[7 - i][7 - j] = WHITE;
@@ -212,7 +213,7 @@ void print_ll(Game_Spec *g)
     }
 }
 
-int Move(int u[8][8], int *Player, Game_Spec *G , int Undo_Call){
+int Move(int u[BOARD_SIZE ][BOARD_SIZE ], int *Player, Game_Spec *G , int Undo_Call){
     int CC = 0 ;
     if(G->Compulsory_Capture){
         if(Capturepossible(u,*Player)){CC=2;}
@@ -239,13 +240,13 @@ int Move(int u[8][8], int *Player, Game_Spec *G , int Undo_Call){
         //FLAG=2 means a capture has been made in last turn so here we are asking the user for successive capture
         if (FLAG == 2 && G->Compulsory_Capture == 0){
             Print_Board(u,G,*Player);
-            printf("DO YOU WANT TO MAKE A SUCCESSIVE CAPTURE(ENTER Y OR N):  ");
+            printf("\t DO YOU WANT TO MAKE A SUCCESSIVE CAPTURE(ENTER Y OR N):  ");
             scanf("\n%c", &c);
             if (c == 'N'){
                 return 1;
             }
             if (c == 'Y'){
-                printf("ENTER CORDINATES OF THE FINAL SQUARE: ");
+                printf("\t ENTER CORDINATES OF THE FINAL SQUARE: ");
             }
         }
 
@@ -293,14 +294,14 @@ int Move(int u[8][8], int *Player, Game_Spec *G , int Undo_Call){
         //printf("%d is value returned by CheckMove function \n\n", val);
         if (val == 0 && FLAG != 2){
             if(CheckMove(u, InitialInt, InitialCharToInt, FinalInt, FinalCharToInt, 0, *Player)){
-                printf("INVALID AS A CAPTURE MUST BE MADE\n");
+                printf("\t INVALID AS A CAPTURE MUST BE MADE\n");
                 return 0 ;
             }
-            printf("WRONG INPUT\n");
+            printf("\t WRONG INPUT\n");
             return 0;
         }
         if (val == 0 && FLAG == 2){
-            printf("WRONG INPUT\n");
+            printf("\t WRONG INPUT\n");
             continue;
         }
 
@@ -346,101 +347,102 @@ int Name_Is_Available(char Name_Of_Game[105]){
 
     FILE* fp;                                                           
 
-    fp = fopen(Name_Of_Game, "r");                                      
+    fp = fopen(Name_Of_Game, "r");                                      // opens <Name_Of_Game> in read mode
     if(fp == NULL)      return 0;                                       // fp is NULL if <Name_Of_Game> is not available
-    else                return 1;
+    else                return 1;                                       // returns 1 [TRUE] if <Name_Of_Game> is available
 
     fclose(fp);                                                         
 }
 
 // This Functions allows the user to Save the Current Game 
-void Save(int u[8][8], int Player, Game_Spec* G){
+void Save(int u[BOARD_SIZE ][BOARD_SIZE ], int Player, Game_Spec* G){
 
     char Name_Of_Game[106];                             
 
     printf("Enter Name of the Game: ");                 
     scanf(" %s", Name_Of_Game);                         
 
-    strcat(Name_Of_Game, ".txt");                           // Game will be stored as <Name_Of_Game>.txt 
+    strcat(Name_Of_Game, ".txt");                                       // Game will be stored as <Name_Of_Game>.txt 
 
     // Checking if the Game exists    
-    while(Name_Is_Available(Name_Of_Game)){
+    while(Name_Is_Available(Name_Of_Game)){                             // Running a loop untill user inputs correct file name
 
         printf("\t The Game does already exists, please enter another name: ");
         scanf(" %s", Name_Of_Game);                         
 
-        strcat(Name_Of_Game, ".txt");                       
+        strcat(Name_Of_Game, ".txt");                                   // Game will be stored as <Name_Of_Game>.txt 
                 
     }
 
     FILE *fp;                                           
-    fp = fopen(Name_Of_Game, "w");                      
+    fp = fopen(Name_Of_Game, "w");                                      // opens <Name_Of_Game> in write mode 
 
-    // Storing the location of each token by writing the mtrix into file
-    for (int i = 0; i < 8; i++){                        
-        for (int j = 0; j < 8; j++){                    
+    // Storing the location of each token by writing the matrix into the file
+    for (int i = 0; i < BOARD_SIZE ; i++){                        
+        for (int j = 0; j < BOARD_SIZE ; j++){                    
             fprintf(fp, "%d ", u[i][j]);                
         }
     }
 
-    fprintf(fp, "%d ", Player);                        // Storing Players turn
+    fprintf(fp, "%d ", Player);                                         // Storing Players turn
 
     // Storing the Game-Specs
-    fprintf(fp, "%d ", G -> Auto_Rotate);               
-    fprintf(fp, "%d ", G -> Compulsory_Capture);        
-    fprintf(fp, "%d ", G -> Num_Moves);                 
-    fprintf(fp, "%d ", G -> Num_Black);                 
-    fprintf(fp, "%d ", G -> Num_White);                 
-    fprintf(fp, "%d ", G -> Num_Black_King);            
-    fprintf(fp, "%d ", G -> Num_White_King);
-    fprintf(fp, "%d ", G -> Board_Orientation);
-    fprintf(fp, "%s ", G -> Name_Of_Player1);
-    fprintf(fp, "%s ", G -> Name_Of_Player2);            
+    fprintf(fp, "%d ", G -> Auto_Rotate);                               // Storing Auto-Rotate
+    fprintf(fp, "%d ", G -> Compulsory_Capture);                        // Storing Compulsory Capture
+    fprintf(fp, "%d ", G -> Num_Moves);                                 // Storing Number of Moves made in the Game
+    fprintf(fp, "%d ", G -> Num_Black);                                 // Storing Number of Black Tokens
+    fprintf(fp, "%d ", G -> Num_White);                                 // Storing Number of White Tokens  
+    fprintf(fp, "%d ", G -> Num_Black_King);                            // Storing Number of Black King Tokens
+    fprintf(fp, "%d ", G -> Num_White_King);                            // Storing Number of White King Tokens
+    fprintf(fp, "%d ", G -> Board_Orientation);                         // Storing Board Orientation
+    fprintf(fp, "%s ", G -> Name_Of_Player1);                           // Storing Name of Player 1
+    fprintf(fp, "%s ", G -> Name_Of_Player2);                           // Storing Name of Player 2
 
-    struct Change* Temp  = G -> Last_Move;              // Pointer to Doubly Linked List that stores Move History
+    struct Change* Temp  = G -> Last_Move;                              // Pointer to Doubly Linked List that stores Move History
 
-    while(Temp -> Prev != NULL){                        // Going to end of Linked List before stoing 
-        Temp = Temp -> Prev;                            // because initally temp points to Latest move
-    }                                                   // but we want to store the first move first
+    while(Temp -> Prev != NULL){                                        // Going to end of Linked List before stoing 
+        Temp = Temp -> Prev;                                            // because initally temp points to Latest move
+    }                                                                   // but we want to store the first move first
 
-    Temp = Temp -> Next;                                
+    Temp = Temp -> Next;                                                // Points Temp to the very first Move
 
     // Storing the Move History to allow UNDO Options in Saved Games
-    while(Temp != NULL){                                
+    while(Temp != NULL){                                                // Loop runs till Latest/Last Move of the Game
          
-        fprintf(fp, "%c ", Temp -> Initial_Char);       
-        fprintf(fp, "%c ", Temp -> Final_Char);         
-        fprintf(fp, "%d ", Temp -> Initial_Int);        
-        fprintf(fp, "%d ", Temp -> Final_Int);          
-        fprintf(fp, "%d ", Temp -> Type);               
-        fprintf(fp, "%d ", Temp -> Kill);               
-        fprintf(fp, "%d ", Temp -> Kill_Type);          
-        fprintf(fp, "%d ", Temp -> Change_To_King);     
+        fprintf(fp, "%c ", Temp -> Initial_Char);                       // Storing Initial Character of Coordinate of current Move
+        fprintf(fp, "%c ", Temp -> Final_Char);                         // Storing Final Character of Coordinate of current Move
+        fprintf(fp, "%d ", Temp -> Initial_Int);                        // Storing Initial Integer of Coordinate of current Move
+        fprintf(fp, "%d ", Temp -> Final_Int);                          // Storing final Integer of Coordinate of current Move
+        fprintf(fp, "%d ", Temp -> Type);                               // Storing Type of Token in Current Move
+        fprintf(fp, "%d ", Temp -> Kill);                               // Storing if any Kills were made in Current Move
+        fprintf(fp, "%d ", Temp -> Kill_Type);                          // Storing Kill Type of current Move
+        fprintf(fp, "%d ", Temp -> Change_To_King);                     // Storing if any ordinary Token was changed to King Token
 
-        Temp = Temp -> Next;                            
+        Temp = Temp -> Next;                                            // Points to Next Move
     }  
 
-    fclose(fp);                                        
+    fclose(fp);                                                         // Closing the File
     return ;
 }
 
 
 
 // Allows user to Reload a Saved Game
-Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player){
+Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[BOARD_SIZE ][BOARD_SIZE ], int *Player){
 
-    FILE* fp;                                           
-    fp = fopen(Name_Of_Game, "r");                      
+    FILE* fp;                                                           
+    fp = fopen(Name_Of_Game, "r");                                      // opens <Name_Of_Game> in read mode
 
 
     // Reading the location of each token
-    for (int i = 0; i < 8; i++){                        
-        for (int j = 0; j < 8; j++){                    
+    for (int i = 0; i < BOARD_SIZE ; i++){                        
+        for (int j = 0; j < BOARD_SIZE ; j++){                    
             fscanf(fp, "%d ", &u[i][j]);                
         }
     }
 
-    fscanf(fp, "%d", Player);                           // Reads Player turn
+    fscanf(fp, "%d", Player);                                           // Reads Player turn
+
 
     // Initialising Variables for Different Variations of the Game
     int Auto_Rotate, Compulsory_Capture, Board_Orientation;                                           
@@ -448,22 +450,20 @@ Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player){
     char Name_Of_Player1[100], Name_Of_Player2[100];                                    
 
     // Reading Game-Specs;
-    fscanf(fp, "%d ", &Auto_Rotate);               
-    fscanf(fp, "%d ", &Compulsory_Capture);        
-    fscanf(fp, "%d ", &Num_Moves);                      
-    fscanf(fp, "%d ", &Num_Black);                 
-    fscanf(fp, "%d ", &Num_White);                 
-    fscanf(fp, "%d ", &Num_Black_Kings);            
-    fscanf(fp, "%d ", &Num_White_Kings);
-    fscanf(fp, "%d ", &Board_Orientation);
-    fscanf(fp, "%s ", Name_Of_Player1);
-    fscanf(fp, "%s ", Name_Of_Player2); 
+    fscanf(fp, "%d ", &Auto_Rotate);                                    // Reading Auto - Rotate
+    fscanf(fp, "%d ", &Compulsory_Capture);                             // Reading Compulsory Capture
+    fscanf(fp, "%d ", &Num_Moves);                                      // Reading Number of Moves made in the Game
+    fscanf(fp, "%d ", &Num_Black);                                      // Reading Number of Black Tokens
+    fscanf(fp, "%d ", &Num_White);                                      // Reading Number of White Tokens
+    fscanf(fp, "%d ", &Num_Black_Kings);                                // Reading Number of Black King Tokens
+    fscanf(fp, "%d ", &Num_White_Kings);                                // Reading Number of White King Tokens
+    fscanf(fp, "%d ", &Board_Orientation);                              // Reading Board Orientation
+    fscanf(fp, "%s ", Name_Of_Player1);                                 // Reading Name of Player 1
+    fscanf(fp, "%s ", Name_Of_Player2);                                 // Reading Name of Player 2
 
     // Initialising Game Board
     Game_Spec* G;                                       
     G = Init_Game(Auto_Rotate, Compulsory_Capture, 0, Num_Black, Num_White, Num_Black_Kings, Num_White_Kings, Board_Orientation, Name_Of_Player1, Name_Of_Player2);
-
-    printf("Num_Moves: %d\n", G -> Num_Moves);
 
 
     //Initialising Variables of Linked List
@@ -473,22 +473,20 @@ Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[8][8], int *Player){
     // Reading the Move History
     for(int i = 0; i < Num_Moves; i++){
 
-        fscanf(fp, "%c ", &Initial_Char);               
-        fscanf(fp, "%c ", &Final_Char);                 
-        fscanf(fp, "%d ", &Initial_Int);                
-        fscanf(fp, "%d ", &Final_Int);                  
-        fscanf(fp, "%d ", &Type);                       
-        fscanf(fp, "%d ", &Kill);                       
-        fscanf(fp, "%d ", &Kill_Type);                  
-        fscanf(fp, "%d ", &Change_To_King);             
+        fscanf(fp, "%c ", &Initial_Char);                               // Reading Initial Character of Coordinate of current Move
+        fscanf(fp, "%c ", &Final_Char);                                 // Reading Final Character of Coordinate of current Move
+        fscanf(fp, "%d ", &Initial_Int);                                // Reading Initial Integer of Coordinate of current Move
+        fscanf(fp, "%d ", &Final_Int);                                  // Reading Final Integer of Coordinate of current Move
+        fscanf(fp, "%d ", &Type);                                       // Reading Type of Token in Current Move
+        fscanf(fp, "%d ", &Kill);                                       // Reading if any Kills were made in Current Move
+        fscanf(fp, "%d ", &Kill_Type);                                  // Reading Kill Type of current Move
+        fscanf(fp, "%d ", &Change_To_King);                             // Reading if any ordinary Token was changed to King Token
 
         // Inserting Moves into the Linked List
         Insert_move(G, Initial_Char, Final_Char, Initial_Int, Final_Int, Type, Kill, Kill_Type, Change_To_King);
     }
 
-    printf("Num_Moves: %d\n", G -> Num_Moves);
-
-    return G;
+    return G;                                                           // Returning Pointer to Game That was created
 }                 
 
 void game_review(struct Game_Spec *g, int* Player)
@@ -498,7 +496,7 @@ void game_review(struct Game_Spec *g, int* Player)
         printf("NO MOVES TILL THIS POINT\n");
         return;
     }
-    int temp[8][8];
+    int temp[BOARD_SIZE ][BOARD_SIZE ];
     Init(temp);
     char c;
     struct Change *curr = g->Moves->Next;
@@ -618,98 +616,153 @@ void game_review(struct Game_Spec *g, int* Player)
 
 
 // This Function simulates the Game
-void Play_Game(int u[8][8], int *Player, Game_Spec *G){
+void Play_Game(int u[BOARD_SIZE ][BOARD_SIZE ], int *Player, Game_Spec *G){
 
     char Command[100];                                              
 
     printf("\n\n");                         
-    Print_Board(u, G, *Player);                                              
+    Print_Board(u, G, *Player);                                                     // Prints Board                                                                         
 
     while (1){
-        printf("\tENTER COMMAND: ");
+
+        printf("\t ENTER COMMAND: ");
         scanf("%s", Command);                                      
         
-        if (strcmp(Command, "MOVE") == 0){  
-            if(Move(u, Player, G , 0)){
-                if(endgame(G,u,-(*Player)))
-                {
-                    Print_Board(u,G,*Player);
-                    if ( *Player<0) //black has won
-                    { 
-                    	printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player1);
-                    	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player2);
+        if (strcmp(Command, "MOVE") == 0){                                          // Checks if 'MOVE' is inputted
+
+            if(Move(u, Player, G , 0)){                                             // Checks if a valid Move was made
+
+                if(endgame(G,u,-(*Player))){                                        // Checks if Game has Ended
+                
+                    Print_Board(u,G,*Player);                                       // Prints Board
+
+                    if (*Player < 0){                                               // Black has won
+
+                    	printf("\t %s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player1);
+                    	printf("\t BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player2);
+
                     }
-                    else 
-                    {
-                        printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player2);
-                    	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player1);
+                    else{                                                           // White has won
+
+                        printf("\t %s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player2);
+                    	printf("\t BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player1);
+
                     }
+
                     return;
                 }
-                else
-                {
-                    // Switches Player and Board-Orientation
-                    *Player = -*Player;                                         
-                    if(G->Auto_Rotate){                                         
-                        G -> Board_Orientation = -G -> Board_Orientation;                                                 
+                else{
+
+                    *Player = -*Player;                                             // Switched Player
+
+                    if(G->Auto_Rotate){                                             // Checks if Auto-Rotate is on
+                        G -> Board_Orientation = -G -> Board_Orientation;           // Toggles Board-Orientation                                      
 		            }
-		            Print_Board(u, G, *Player);
+
+		            Print_Board(u, G, *Player);                                     // Prints Board
                 } 
             }   
         }
-        else if (strcmp(Command, "UNDO") == 0){   
-            if(Undo(u, G , Player,0)){
+        else if (strcmp(Command, "UNDO") == 0){                                     // Checks if 'Undo' is inputted
 
-                // Switches Player and Board-Orientation
-                *Player = -*Player;                                         
-                if(G->Auto_Rotate){
-                    G -> Board_Orientation = -G -> Board_Orientation;
+            if (G -> Num_Moves == 0){                                               // Checks if Number of Moves are 0
+                printf("\t NO MOVES LEFT TO UNDO\n");
+            }
+            else{
+
+                char permission[5];
+
+                if(*Player > 0){                                                    // Checks for Player 2 
+
+                    printf("\t DO YOU AGREE TO UNDO THE CURRENT MOVE %s ? ", G -> Name_Of_Player1);
+                    scanf(" %s", permission);
+
+                    // Checks if Player 1 Agreed to Undo Current Move
+                    if(strcmp(permission, "YES") == 0 || strcmp(permission, "Y") == 0 || strcmp(permission, "yes") == 0 || strcmp(permission, "y") == 0){
+                        
+                        Undo(u, G , Player, 0);                                      // Undo's the Current Move
+
+                        *Player = -*Player;                                         // Switched Player
+
+                        if(G->Auto_Rotate){                                         // Checks if Auto-Rotate is on
+                            G -> Board_Orientation = -G -> Board_Orientation;       // Toggles Board-Orientation                                      
+                        }
+
+                        Print_Board(u, G, *Player);                                 // Prints Board
+                        
+                    }
+                    else{
+                        printf("\t SINCE %s DISAGREED, YOU CANNOT UNDO THE CURRENT MOVE %s \n", G -> Name_Of_Player1, G -> Name_Of_Player2);
+                    }
+                      
+                }else{
+
+                    printf("\t DO YOU AGREE TO UNDO THE CURRENT MOVE %s ? ", G -> Name_Of_Player2);
+                    scanf(" %s", permission);
+
+                    // Checks if Player 2 Agreed to Undo Current Move
+                    if(strcmp(permission, "YES") == 0 || strcmp(permission, "Y") == 0 || strcmp(permission, "yes") == 0 || strcmp(permission, "y") == 0){
+                        
+                        Undo(u, G , Player, 0);                                     // Undo's the Current Move
+
+                        *Player = -*Player;                                         // Switched Player
+
+                        if(G->Auto_Rotate){                                         // Checks if Auto-Rotate is on
+                            G -> Board_Orientation = -G -> Board_Orientation;       // Toggles Board-Orientation                                      
+                        }
+
+                        Print_Board(u, G, *Player);                                 // Prints Board
+                         
+                    }
+                    else{
+                        printf("\t SINCE %s DISAGREED, YOU CANNOT UNDO THE CURRENT MOVE %s \n", G -> Name_Of_Player2, G -> Name_Of_Player1);
+                    }
+
                 }
-                Print_Board(u, G, *Player); 
-            }   
+                
+            }  
         }
-        else if (strcmp(Command, "SAVE") == 0){                     
-            Save(u, *Player, G);                                     
+        else if (strcmp(Command, "SAVE") == 0){                                     // Checks if 'Save' is inputted
+            Save(u, *Player, G);                                                    // Calls Function to Save Game
         }
-        else if (strcmp(Command, "NEXTK") == 0){                     
-            printf("ENTER K: ");
+        else if (strcmp(Command, "NEXTK") == 0){                                    // Checks if 'NextK' is inputted
+            
             int K ;
+
+            printf("\t ENTER K: ");
             scanf("%d",&K);
-            Next_K_Moves(u,*Player,K,G);                                    
+
+            Next_K_Moves(u,*Player,K,G);                                            // Calls Function to Print Next K Moves
+
         }
-        else if(strcmp(Command, "REVIEW") == 0)
+        else if(strcmp(Command, "REVIEW") == 0)                                     // Checks if 'Review' is inputted
         {
-            game_review(G, Player);
+            game_review(G, Player);                                                 // Calls Function to Review the Game
+
             printf("\nTHE REVIEW HAS BEEN COMPLETED AND THE CURRENT SITUATION OF THE BOARD IS:\n\n");
-            Print_Board(u, G, *Player);
+            Print_Board(u, G, *Player);                                             // Prints Board
+
         }
-        else if (strcmp(Command, "QUIT") == 0){                     
+        else if (strcmp(Command, "QUIT") == 0){                                     // Checks if 'QUIT' is inputted
 
-            char s[5];                                              
-            printf("Do you want to Save the Game ? ");              
-            scanf(" %s", s);                                        
+            char permission[5];                                              
+            printf("\t DO YOU WANT TO SAVE THE GAME ? ");               
+            scanf(" %s", permission);                                               
 
-            if(strcmp(s, "YES") == 0 || strcmp(s, "Y") == 0 || strcmp(s, "yes") == 0 || strcmp(s, "y") == 0){
-                Save(u, *Player, G);                                 
+            // Checks is Player Agreed to Save Game before Quitting
+            if(strcmp(permission, "YES") == 0 || strcmp(permission, "Y") == 0 || strcmp(permission, "yes") == 0 || strcmp(permission, "y") == 0){
+               
+                Save(u, *Player, G);                                                // Calls Function to Save Game
                 return ;                                            
             }
 
             return ;                                                
+        }   
+        else if(strcmp(Command,"SUGGEST")==0){                                      // Checks if 'SUGGEST' is inputted
+            suggest(u, *Player,G);                                                  // Calls the Function to Suggest Moves
         }
-        else if(strcmp(Command,"SUGGEST")==0)
-        {
-            char c;
-            int x;
-            //scanf(" %c%d",&c,&x);
-            // if(!PossibleMoves(c,x,u,*Player,true))
-            //     printf("No Moves Possible!!\n");
-            suggest(u, *Player,G);
-        }
-
-        //print_ll(G);                                                
-
                                             
-        getchar();                                                  
+        getchar();                                                                  // Gets any unwanted inputs in the input buffer
     }
 
     return ;
@@ -717,7 +770,7 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
 
 
 
-bool PossibleMoves(char c,int x, int board[8][8],int player,bool print , bool capture)
+bool PossibleMoves(char c,int x, int board[BOARD_SIZE ][BOARD_SIZE ],int player,bool print , bool capture)
 {
     // will print the possible positions for a piece if the print variable is true
     bool flag=false;
@@ -725,22 +778,22 @@ bool PossibleMoves(char c,int x, int board[8][8],int player,bool print , bool ca
     int y=c- 'A';
     if( abs(board[x][y])==1)
     {
-        if(CheckMove(board,x,y,x-player,y+1,0,player) && y+1<8 && 0<=x-player<8 &&!capture)
+        if(CheckMove(board,x,y,x-player,y+1,0,player) && y+1<BOARD_SIZE  && 0<=x-player<BOARD_SIZE  &&!capture)
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y+1+'A',x-player+1);
             flag=true;
         }
-        if(CheckMove(board,x,y,x - player,y-1,0,player) && y-1>=0 && 0<=x-player<8&&!capture)
+        if(CheckMove(board,x,y,x - player,y-1,0,player) && y-1>=0 && 0<=x-player<BOARD_SIZE &&!capture)
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y-1+'A',x -player +1);
             flag=true;
         }
-        if(CheckMove(board,x,y,x - (2*player),y+2,0,player) && y+2<8 && 0<=x - (2*player)<8)
+        if(CheckMove(board,x,y,x - (2*player),y+2,0,player) && y+2<BOARD_SIZE  && 0<=x - (2*player)<BOARD_SIZE )
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y+2+'A',x+ (-2)*player +1);
             flag=true;
         }
-        if(CheckMove(board,x,y,x+ (-2)*player,y-2,0,player) && y-2>=0 && 0<= x- (2*player)<8)
+        if(CheckMove(board,x,y,x+ (-2)*player,y-2,0,player) && y-2>=0 && 0<= x- (2*player)<BOARD_SIZE )
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y-2+'A',x+ (-2)*player+1);
             flag=true;
@@ -753,17 +806,17 @@ bool PossibleMoves(char c,int x, int board[8][8],int player,bool print , bool ca
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y-1+'A',x);
             flag=true;
         }
-        if(CheckMove(board,x,y,x-1,y+1,0,player) && y+1<8 && 0<=x-1&&!capture)
+        if(CheckMove(board,x,y,x-1,y+1,0,player) && y+1<BOARD_SIZE  && 0<=x-1&&!capture)
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y+1+'A',x);
             flag=true;
         }
-        if(CheckMove(board,x,y,x+1,y-1,0,player) && 0<=y-1 && x+1<8&&!capture)
+        if(CheckMove(board,x,y,x+1,y-1,0,player) && 0<=y-1 && x+1<BOARD_SIZE &&!capture)
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y-1+'A',x+2);
             flag=true;
         }
-        if(CheckMove(board,x,y,x+1,y+1,0,player) && y+1<8 && x+1<8&&!capture)
+        if(CheckMove(board,x,y,x+1,y+1,0,player) && y+1<BOARD_SIZE  && x+1<BOARD_SIZE &&!capture)
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y+1+'A',x+2);
             flag=true;
@@ -773,17 +826,17 @@ bool PossibleMoves(char c,int x, int board[8][8],int player,bool print , bool ca
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y-2+'A',x-1);
             flag=true;
         }
-        if(CheckMove(board,x,y,x-2,y+2,0,player) && y+2<8 && 0<=x-2)
+        if(CheckMove(board,x,y,x-2,y+2,0,player) && y+2<BOARD_SIZE  && 0<=x-2)
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y+2+'A',x-1);
             flag=true;
         }
-        if(CheckMove(board,x,y,x+2,y-2,0,player) && 0<=y-2 && x+2<8)
+        if(CheckMove(board,x,y,x+2,y-2,0,player) && 0<=y-2 && x+2<BOARD_SIZE )
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y-2+'A',x+3);
             flag=true;
         }
-        if(CheckMove(board,x,y,x+2,y+2,0,player) && y+2<8 && x+2<8)
+        if(CheckMove(board,x,y,x+2,y+2,0,player) && y+2<BOARD_SIZE  && x+2<BOARD_SIZE )
         {
             if(print)printf("\t %c%d->%c%d\n",c,x+1,y+2+'A',x+3);
             flag=true;
@@ -794,15 +847,15 @@ bool PossibleMoves(char c,int x, int board[8][8],int player,bool print , bool ca
 }
 
 
-void suggest(int u[8][8],int player, Game_Spec* G)
+void suggest(int u[BOARD_SIZE ][BOARD_SIZE ],int player, Game_Spec* G)
 {
 
     bool isCapturePossible = false;
     if(G->Compulsory_Capture){isCapturePossible = Capturepossible(u,player);}
     bool flag;
-    for(int i=0;i<8;i++)
+    for(int i=0;i<BOARD_SIZE ;i++)
     {
-        for(int j=1;j<=8;j++)
+        for(int j=1;j<=BOARD_SIZE ;j++)
         {
             flag=PossibleMoves(i+'A',j,u,player,true,isCapturePossible);
         }
@@ -811,13 +864,13 @@ void suggest(int u[8][8],int player, Game_Spec* G)
     printf("\n\n");
 }
 
-bool Capturepossible(int u[8][8],int player)
+bool Capturepossible(int u[BOARD_SIZE ][BOARD_SIZE ],int player)
 {
     
     bool flag;
-    for(int i=0;i<8;i++)
+    for(int i=0;i<BOARD_SIZE ;i++)
     {
-        for(int j=1;j<=8;j++)
+        for(int j=1;j<=BOARD_SIZE ;j++)
         {
             flag=PossibleMoves(i+'A',j,u,player,false,true);
             if(flag){return flag;}
@@ -828,7 +881,7 @@ bool Capturepossible(int u[8][8],int player)
 }
 
 
-bool endgame(Game_Spec* G,int u[8][8], int Player)
+bool endgame(Game_Spec* G,int u[BOARD_SIZE ][BOARD_SIZE ], int Player)
 {
     if (Player < 0 && (G->Num_Black+G->Num_Black_King)==0)
         return true;
@@ -837,9 +890,9 @@ bool endgame(Game_Spec* G,int u[8][8], int Player)
     
     //bool flag=false;
     int val=Player;
-    for(int i=0;i<8;i++)
+    for(int i=0;i<BOARD_SIZE ;i++)
     {
-        for(int j=0;j<8;j++)
+        for(int j=0;j<BOARD_SIZE ;j++)
             if(u[i][j]==val && PossibleMoves(j+'A',i+1,u,val,false,false))
                 return false;
                 //flag=true;
@@ -855,11 +908,11 @@ bool endgame(Game_Spec* G,int u[8][8], int Player)
 
 //////////////////////////////////////////////////////////////////////////////*********************************************////////////////////////
 
-void copy(int v[8][8], int u [8][8])
+void copy(int v[BOARD_SIZE ][BOARD_SIZE ], int u [BOARD_SIZE ][BOARD_SIZE ])
 {
-    for (int i = 0 ; i < 8 ; i = i + 1)
+    for (int i = 0 ; i < BOARD_SIZE  ; i = i + 1)
     {
-        for (int j = 0 ; j < 8 ; j = j + 1)
+        for (int j = 0 ; j < BOARD_SIZE  ; j = j + 1)
         {
             v[i][j] = u[i][j] ;
         }
@@ -868,7 +921,7 @@ void copy(int v[8][8], int u [8][8])
     return ;
 }
 
-void move (int u[8][8], int row,int colm,int row_new ,int colm_new)
+void move (int u[BOARD_SIZE ][BOARD_SIZE ], int row,int colm,int row_new ,int colm_new)
 {
     if (abs(row_new - row) == 1)
     {
@@ -887,7 +940,7 @@ void move (int u[8][8], int row,int colm,int row_new ,int colm_new)
 }
 
 
-int Change_To_King (int u[8][8], int player,int FinalRow, int InitialRow, int InitialColm, Vertex* V )
+int Change_To_King (int u[BOARD_SIZE ][BOARD_SIZE ], int player,int FinalRow, int InitialRow, int InitialColm, Vertex* V )
 {   
     int change = 0;
         
@@ -912,9 +965,9 @@ int Change_To_King (int u[8][8], int player,int FinalRow, int InitialRow, int In
 // after every move have to check if the game has ended.. -- Done
 // need to keep int no of moves with final no of moves for the print_sequence function..
 // need to convert to kings.. -- Done
-void Print_K_Moves(int u[8][8], int player, int k, int count, Vertex* V)
+void Print_K_Moves(int u[BOARD_SIZE ][BOARD_SIZE ], int player, int k, int count, Vertex* V)
 {
-    int v[8][8] = {0} ;
+    int v[BOARD_SIZE ][BOARD_SIZE ] = {0} ;
     int change = 0;
 
     if (endgame(V->G,u,player) == true)
@@ -925,9 +978,9 @@ void Print_K_Moves(int u[8][8], int player, int k, int count, Vertex* V)
     }
     
 
-    for (int row = 0 ; row < 8 ; row = row + 1)
+    for (int row = 0 ; row < BOARD_SIZE  ; row = row + 1)
     {
-        for (int colm = 0 ; colm < 8 ; colm = colm + 1)
+        for (int colm = 0 ; colm < BOARD_SIZE  ; colm = colm + 1)
         {
             if (player * u[row][colm] > 0)
             {   
@@ -1124,7 +1177,7 @@ void Print_K_Moves(int u[8][8], int player, int k, int count, Vertex* V)
 
 }
 
-void Next_K_Moves(int u[8][8], int player,int k ,Game_Spec* G)
+void Next_K_Moves(int u[BOARD_SIZE ][BOARD_SIZE ], int player,int k ,Game_Spec* G)
 {
     Vertex* V = (Vertex*) malloc (sizeof(Vertex)) ;
 

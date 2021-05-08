@@ -97,12 +97,12 @@ int main()
                                 }
                                 else if(choice == 2){
 
-                                        char s[5];
+                                        char permission[5];
                                         printf("\t\t Do you want Compulsory Capture to be ON ? ");
-                                        scanf(" %s", s);
+                                        scanf(" %s", permission);
                                         printf("\n");
 
-                                        if(strcmp(s, "YES") == 0 || strcmp(s, "Y") == 0 || strcmp(s, "yes") == 0 || strcmp(s, "y") == 0){
+                                        if(strcmp(permission, "YES") == 0 || strcmp(permission, "Y") == 0 || strcmp(permission, "yes") == 0 || strcmp(permission, "y") == 0){
                                                 Compulsory_Capture = 1;
                                         }
                                         else{

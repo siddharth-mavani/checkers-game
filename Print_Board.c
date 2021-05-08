@@ -46,7 +46,7 @@ void print_row(int type){
     return ;
 }
 
-void Print_Board(int u[8][8], Game_Spec* G, int Player){
+void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
     printf("\n\n\n\n\n");
     char* instruction;
     instruction = (char*)malloc(sizeof(char)*100);
@@ -55,7 +55,7 @@ void Print_Board(int u[8][8], Game_Spec* G, int Player){
 
         printf("\t    A    B    C    D    E    F    G    H \n");
 
-        for(int i = 0 ; i < 8; i++){
+        for(int i = 0 ; i < BOARD_SIZE; i++){
 
             if(i % 2 == 0){
                 print_row(1);
@@ -68,7 +68,7 @@ void Print_Board(int u[8][8], Game_Spec* G, int Player){
             printf("%s", instruction);
 
             printf("\t%d ", i+1);
-            for(int j = 0 ; j < 8 ; j++){
+            for(int j = 0 ; j < BOARD_SIZE ; j++){
 
                 if ((i + j) % 2 == 1){
 
@@ -135,7 +135,7 @@ void Print_Board(int u[8][8], Game_Spec* G, int Player){
 
         printf("\t    H    G    F    E    D    C    B    A \n");
 
-        for(int i = 7 ; i >= 0; i--){
+        for(int i = BOARD_SIZE  - 1 ; i >= 0; i--){
 
             if(i % 2 == 1){
                 print_row(1);
@@ -144,11 +144,11 @@ void Print_Board(int u[8][8], Game_Spec* G, int Player){
                 print_row(2);
             }
 
-            get_instruction(3 * (7-i), &instruction);
+            get_instruction(3 * (BOARD_SIZE  - 1-i), &instruction);
             printf("%s", instruction);
             
             printf("\t%d ", i+1);
-            for(int j = 7; j >= 0; j--){
+            for(int j = BOARD_SIZE  - 1; j >= 0; j--){
 
                 if ((i + j) % 2 == 1)
                 {
@@ -195,7 +195,7 @@ void Print_Board(int u[8][8], Game_Spec* G, int Player){
             }
 
             printf(" %d", i+1);
-            get_instruction(3 * (7-i) + 1, &instruction);
+            get_instruction(3 * (BOARD_SIZE -1 - i) + 1, &instruction);
             printf("%s",instruction);
 
             if(i%2==1){
@@ -205,7 +205,7 @@ void Print_Board(int u[8][8], Game_Spec* G, int Player){
                 print_row(2);
             }
 
-            get_instruction(3 * (7-i) + 2, &instruction);
+            get_instruction(3 * (BOARD_SIZE  - 1 - i) + 2, &instruction);
             printf("%s", instruction);
         }
         printf("\t    H    G    F    E    D    C    B    A \n");
@@ -223,12 +223,12 @@ void Print_Board(int u[8][8], Game_Spec* G, int Player){
 }
 
 
-void Print_Num(int u[8][8]){
+void Print_Num(int u[BOARD_SIZE][BOARD_SIZE]){
 
     printf("A  B  C  D  E  F  G  H\n");
 
-    for(int i=0;i<8;i++){
-        for(int j=0 ;j<8;j++){
+    for(int i = 0; i < BOARD_SIZE; i++){
+        for(int j=0 ; j < BOARD_SIZE;j++){
             printf("%2d ",u[i][j]);
         }
         printf("\n");
