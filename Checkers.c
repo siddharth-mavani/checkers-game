@@ -64,7 +64,17 @@ void Insert_move(Game_Spec *Game, char Initial_Char, char Final_Char, int Initia
     return ;
 }
 
-int Undo(int u[8][8], struct Game_Spec *G){
+int SuccessiveCapture(int u[8][8] , int InitialInt , int InitialCharToInt , int Player){
+    int num_kill_possible = 0 ;
+    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt+2, InitialCharToInt+2, 0, Player);
+    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt-2, InitialCharToInt-2, 0, Player);
+    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt+2, InitialCharToInt-2, 0, Player);
+    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt-2, InitialCharToInt+2, 0, Player);
+    return num_kill_possible/2;
+
+}
+
+int Undo(int u[8][8], struct Game_Spec *G , int* Player){
 
     if (G->Num_Moves == 0){
         printf("NO MOVES LEFT TO UNDO\n");
@@ -96,9 +106,17 @@ int Undo(int u[8][8], struct Game_Spec *G){
 
     G->Last_Move = Temp->Prev;
     G->Last_Move->Next = NULL;
-    free(Temp);
-    G->Num_Moves--;
 
+    free(Temp);
+
+    G->Num_Moves--;
+    if(G->Last_Move->Kill==1){
+        *Player=-*Player;
+        if(G->Auto_Rotate){G->Board_Orientation = -G->Board_Orientation; }
+        if(Move(u,Player,G,1))
+        {*Player=-*Player;
+        if(G->Auto_Rotate){G->Board_Orientation = -G->Board_Orientation; return 1;}return 0;}
+        }
     return 1;
 }
 
@@ -194,7 +212,7 @@ void print_ll(Game_Spec *g)
     }
 }
 
-int Move(int u[8][8], int *Player, Game_Spec *G){
+int Move(int u[8][8], int *Player, Game_Spec *G , int Undo_Call){
     int FLAG = 0;
     char InitialChar;
     int InitialInt;
@@ -207,10 +225,15 @@ int Move(int u[8][8], int *Player, Game_Spec *G){
     int Change_To_King = 0;
     int Done = 0;
     char c;
+    if(Undo_Call){
+        FLAG = 2 ; 
+        InitialChar = G->Last_Move->Final_Char ;
+        InitialCharToInt = G->Last_Move->Final_Char - 'A' ;
+        InitialInt = G->Last_Move->Final_Int ;}
     do{
         //FLAG=2 means a capture has been made in last turn so here we are asking the user for successive capture
         if (FLAG == 2 && G->Compulsory_Capture == 0){
-            Print_Num(u);
+            Print_Board(u,G,*Player);
             printf("DO YOU WANT TO MAKE A SUCCESSIVE CAPTURE(ENTER Y OR N):  ");
             scanf("\n%c", &c);
             if (c == 'N'){
@@ -219,6 +242,19 @@ int Move(int u[8][8], int *Player, Game_Spec *G){
             if (c == 'Y'){
                 printf("ENTER CORDINATES OF THE FINAL SQUARE: ");
             }
+        }
+
+        if (FLAG == 2 && G->Compulsory_Capture == 1){
+            int NumKillPossible = SuccessiveCapture(u,InitialInt,InitialCharToInt,*Player);
+            printf("SUCCESSIVE CAPTURE IS ON\n");
+            if(!NumKillPossible){printf("BUT NO CAPTURE CAN BE MADE\n"); return 1 ;}
+            Print_Board(u,G,*Player);
+            if(NumKillPossible==1){printf("1 POSSIBLE CAPTURE IS POSSIBLE\n");}
+            if(NumKillPossible==2){printf("2 POSSIBLE CAPTURES ARE POSSIBLE\n");}
+            if(NumKillPossible==3){printf("3 POSSIBLE CAPTURES ARE POSSIBLE\n");}
+            printf("IF YOU WANT TO UNDO PREVIOUS CAPTUE ENTER \"L4ST\"\n");
+            printf("ENTER CORDINATES OF THE FINAL SQUARE: ");
+
         }
 
         // If FLAG!=2 we need to input the coordinates for the initial square , if FLAG=2 we can just use final cord. of last
@@ -233,6 +269,11 @@ int Move(int u[8][8], int *Player, Game_Spec *G){
 
         // Asking for final coordinates
         scanf(" %c%d", &FinalChar, &FinalInt);
+        if(FinalChar=='L'&&FinalInt==4){
+            if(G->Auto_Rotate){G->Board_Orientation=-G->Board_Orientation;}
+            *Player = -*Player ;
+            Undo(u,G,Player); 
+            return (1-Undo_Call);}
         FinalCharToInt = FinalChar - 'A';
         FinalInt--;
 
@@ -267,7 +308,7 @@ int Move(int u[8][8], int *Player, Game_Spec *G){
         }
 
         Insert_move(G, InitialChar, FinalChar, InitialInt, FinalInt, u[InitialInt][InitialCharToInt], Kill, Kill_Type, Change_To_King);
-
+        Change_To_King=0;
         //here we are swapping the final and initial squares
         swap(&u[InitialInt][InitialCharToInt], &u[FinalInt][FinalCharToInt]);
 
@@ -562,7 +603,6 @@ void game_review(struct Game_Spec *g, int* Player)
 }
 
 
-
 // This Function simulates the Game
 void Play_Game(int u[8][8], int *Player, Game_Spec *G){
 
@@ -576,7 +616,7 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
         scanf("%s", Command);                                      
 
         if (strcmp(Command, "MOVE") == 0){  
-            if(Move(u, Player, G)){
+            if(Move(u, Player, G , 0)){
                 if(endgame(G,u,-(*Player)))
                 {
                     Print_Board(u,G,*Player);
@@ -584,11 +624,6 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
                     { 
                     	printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player1);
                     	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player2);
-                    }
-                    else 
-                    {
-                        printf("%s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n",G->Name_Of_Player2);
-                    	printf("BETTER LUCK NEXT TIME %s\n",G->Name_Of_Player1);
                     }
                     return;
                 }
@@ -604,7 +639,7 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
             }   
         }
         else if (strcmp(Command, "UNDO") == 0){   
-            if(Undo(u, G)){
+            if(Undo(u, G , Player)){
 
                 // Switches Player and Board-Orientation
                 *Player = -*Player;                                         
