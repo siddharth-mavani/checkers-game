@@ -640,10 +640,10 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
         {
             char c;
             int x;
-            scanf(" %c%d",&c,&x);
-            if(!PossibleMoves(c,x,u,*Player,true))
-                printf("No Moves Possible!!\n");
-
+            //scanf(" %c%d",&c,&x);
+            // if(!PossibleMoves(c,x,u,*Player,true))
+            //     printf("No Moves Possible!!\n");
+            suggest(u, *Player);
         }
 
         //print_ll(G);                                                
@@ -653,6 +653,19 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G){
     }
 
     return ;
+}
+
+void suggest(int u[8][8],int player)
+{
+    bool flag;
+    for(int i=0;i<8;i++)
+    {
+        for(int j=1;j<=8;j++)
+        {
+            flag=PossibleMoves(i+'A',j,u,player,true);
+        }
+
+    }
 }
 
 bool PossibleMoves(char c,int x, int board[8][8],int player,bool print)
@@ -665,22 +678,22 @@ bool PossibleMoves(char c,int x, int board[8][8],int player,bool print)
     {
         if(CheckMove(board,x,y,x-player,y+1,0,player) && y+1<8 && 0<=x-player<8)
         {
-            if(print)printf("%c%d\n",y+1+'A',x-player+1);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y+1+'A',x-player+1);
             flag=true;
         }
-        if(CheckMove(board,x,y,x - player,y-1,0,player) && y-1>0 && 0<=x-player<8)
+        if(CheckMove(board,x,y,x - player,y-1,0,player) && y-1>=0 && 0<=x-player<8)
         {
-            if(print)printf("%c%d\n",y-1+'A',x -player +1);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y-1+'A',x -player +1);
             flag=true;
         }
         if(CheckMove(board,x,y,x - (2*player),y+2,0,player) && y+2<8 && 0<=x - (2*player)<8)
         {
-            if(print)printf("%c%d\n",y+2+'A',x+ (-2)*player +1);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y+2+'A',x+ (-2)*player +1);
             flag=true;
         }
         if(CheckMove(board,x,y,x+ (-2)*player,y-2,0,player) && y-2>=0 && 0<= x- (2*player)<8)
         {
-            if(print)printf("%c%d\n",y-2+'A',x+ (-2)*player+1);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y-2+'A',x+ (-2)*player+1);
             flag=true;
         }
     }
@@ -688,42 +701,42 @@ bool PossibleMoves(char c,int x, int board[8][8],int player,bool print)
     {
         if(CheckMove(board,x,y,x-1,y-1,0,player) && 0<=y-1 && 0<=x-1)
         {
-            if(print)printf("%c%d\n",y-1+'A',x);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y-1+'A',x);
             flag=true;
         }
         if(CheckMove(board,x,y,x-1,y+1,0,player) && y+1<8 && 0<=x-1)
         {
-            if(print)printf("%c%d\n",y+1+'A',x);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y+1+'A',x);
             flag=true;
         }
         if(CheckMove(board,x,y,x+1,y-1,0,player) && 0<=y-1 && x+1<8)
         {
-            if(print)printf("%c%d\n",y-1+'A',x+2);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y-1+'A',x+2);
             flag=true;
         }
         if(CheckMove(board,x,y,x+1,y+1,0,player) && y+1<8 && x+1<8)
         {
-            if(print)printf("%c%d\n",y+1+'A',x+2);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y+1+'A',x+2);
             flag=true;
         }
         if(CheckMove(board,x,y,x-2,y-2,0,player) && 0<=y-2 && 0<=x-2)
         {
-            if(print)printf("%c%d\n",y-2+'A',x-1);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y-2+'A',x-1);
             flag=true;
         }
         if(CheckMove(board,x,y,x-2,y+2,0,player) && y+2<8 && 0<=x-2)
         {
-            if(print)printf("%c%d\n",y+2+'A',x-1);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y+2+'A',x-1);
             flag=true;
         }
         if(CheckMove(board,x,y,x+2,y-2,0,player) && 0<=y-2 && x+2<8)
         {
-            if(print)printf("%c%d\n",y-2+'A',x+3);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y-2+'A',x+3);
             flag=true;
         }
         if(CheckMove(board,x,y,x+2,y+2,0,player) && y+2<8 && x+2<8)
         {
-            if(print)printf("%c%d\n",y+2+'A',x+3);
+            if(print)printf("%c%d->%c%d\n",c,x+1,y+2+'A',x+3);
             flag=true;
         }
     }

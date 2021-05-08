@@ -62,6 +62,7 @@ void Play_Game(int u[8][8], int *Player, Game_Spec *G);                         
 int Name_Is_Available(char Name_Of_Game[105]);
 bool PossibleMoves(char c,int x, int board[8][8],int player,bool print); //Checks if moves are possible for a specific piece and can print them 
 bool endgame(Game_Spec* G,int u[8][8], int Player); //Checks if the game has ended
+void suggest(int u[8][8],int player);
 
 // Print_Board.c
 void Print_Board(int u[8][8], Game_Spec* Game, int Player);

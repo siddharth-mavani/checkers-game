@@ -14,7 +14,7 @@ void get_instruction(int i, char** instruction){
     strcpy(ins[5], "\t\t - To Undo a move: UNDO\n");
     strcpy(ins[6], "\t\t - To Save Game: SAVE\n");
     strcpy(ins[7], "\t\t - To Quit Game: QUIT\n"); 
-    strcpy(ins[8], "\t\t - To Suggest Possible Moves: SUGGEST <Coordinate>\n");
+    strcpy(ins[8], "\t\t - To Suggest All Possible Moves: SUGGEST\n");
     strcpy(ins[9], "\n");
     strcpy(ins[10], "\n");
     strcpy(ins[11], "\n");
