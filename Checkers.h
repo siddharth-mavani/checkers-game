@@ -82,15 +82,15 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G);       
 
 int Name_Is_Available(char Name_Of_Game[105]);
 
-void suggest(int u[BOARD_SIZE][BOARD_SIZE],int player,Game_Spec* G);
+void suggest(int Board[BOARD_SIZE][BOARD_SIZE],int player,Game_Spec* G);
 
-bool PossibleMoves(char c,int x, int board[BOARD_SIZE][BOARD_SIZE],int player,bool print,bool capture);         //Checks if moves are possible for a specific piece and can print them 
+bool PossibleMoves(char coord_letter, int coord_no, int Board[BOARD_SIZE][BOARD_SIZE], int player, bool print, bool capture);    //Checks if moves are possible for a specific piece and can print them       
 
-bool endgame(Game_Spec* G,int u[BOARD_SIZE][BOARD_SIZE], int Player);                                           //Checks if the game has ended
+bool endgame(Game_Spec* G,int Board[BOARD_SIZE][BOARD_SIZE], int Player);                                            //Checks if the game has ended
 
 void Next_K_Moves(int u[BOARD_SIZE][BOARD_SIZE], int player,int k ,Game_Spec* G);
 
-bool Capturepossible(int u[BOARD_SIZE][BOARD_SIZE],int player);
+bool Capturepossible(int Board[BOARD_SIZE][BOARD_SIZE],int player);
 
 void game_review(struct Game_Spec *g, int* Player);
 

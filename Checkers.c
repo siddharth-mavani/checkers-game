@@ -1017,7 +1017,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
 /* 
     Given a coordinate checks if any moves exists, may print them.
 */
-bool PossibleMoves(char c, int x, int board[BOARD_SIZE][BOARD_SIZE], int player, bool print, bool capture)
+bool PossibleMoves(char coord_letter, int coord_no, int Board[BOARD_SIZE][BOARD_SIZE], int player, bool print, bool capture)
 {
     /* 
         c and x together define the corrdinate of the piece for which we find all possible moves
@@ -1027,84 +1027,84 @@ bool PossibleMoves(char c, int x, int board[BOARD_SIZE][BOARD_SIZE], int player,
         bool capture is toggled true if a capture exists forcing only the printing of those moves
     */
     bool flag = false;
-    x--;
-    int y = c - 'A';
-    if (abs(board[x][y]) == 1) // non king piece
+    coord_no--;
+    int y_coord = coord_letter - 'A';
+    if (abs(Board[coord_no][y_coord]) == 1) // non king piece
     // by performing x-player we check the forward row for black pieces(-1) and the backward row for white pieces
     {
-        if (CheckMove(board, x, y, x - player, y + 1, 0, player) && y + 1 < BOARD_SIZE && 0 <= x - player < BOARD_SIZE && !capture) //forward/back right diagonal
+        if (CheckMove(Board, coord_no, y_coord, coord_no - player, y_coord + 1, 0, player) && y_coord + 1 < BOARD_SIZE && 0 <= coord_no - player < BOARD_SIZE && !capture) //forward/back right diagonal
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y + 1 + 'A', x - player + 1);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord + 1 + 'A', coord_no - player + 1);
             flag = true;
         }
-        if (CheckMove(board, x, y, x - player, y - 1, 0, player) && y - 1 >= 0 && 0 <= x - player < BOARD_SIZE && !capture) // forward/back left diagonal
+        if (CheckMove(Board, coord_no, y_coord, coord_no - player, y_coord - 1, 0, player) && y_coord - 1 >= 0 && 0 <= coord_no - player < BOARD_SIZE && !capture) // forward/back left diagonal
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y - 1 + 'A', x - player + 1);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord - 1 + 'A', coord_no - player + 1);
             flag = true;
         }
-        if (CheckMove(board, x, y, x - (2 * player), y + 2, 0, player) && y + 2 < BOARD_SIZE && 0 <= x - (2 * player) < BOARD_SIZE) // forward/back right capture posn
+        if (CheckMove(Board, coord_no, y_coord, coord_no - (2 * player), y_coord + 2, 0, player) && y_coord + 2 < BOARD_SIZE && 0 <= coord_no - (2 * player) < BOARD_SIZE) // forward/back right capture posn
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y + 2 + 'A', x + (-2) * player + 1);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord + 2 + 'A', coord_no + (-2) * player + 1);
             flag = true;
         }
-        if (CheckMove(board, x, y, x + (-2) * player, y - 2, 0, player) && y - 2 >= 0 && 0 <= x - (2 * player) < BOARD_SIZE) // forward/back left capture posn
+        if (CheckMove(Board, coord_no, y_coord, coord_no + (-2) * player, y_coord - 2, 0, player) && y_coord - 2 >= 0 && 0 <= coord_no - (2 * player) < BOARD_SIZE) // forward/back left capture posn
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y - 2 + 'A', x + (-2) * player + 1);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord - 2 + 'A', coord_no + (-2) * player + 1);
             flag = true;
         }
     }
-    else if (abs(board[x][y]) == 2) //king piece
+    else if (abs(Board[coord_no][y_coord]) == 2) //king piece
     {
-        if (CheckMove(board, x, y, x - 1, y - 1, 0, player) && 0 <= y - 1 && 0 <= x - 1 && !capture) // back left diagonal
+        if (CheckMove(Board, coord_no, y_coord, coord_no - 1, y_coord - 1, 0, player) && 0 <= y_coord - 1 && 0 <= coord_no - 1 && !capture) // back left diagonal
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y - 1 + 'A', x);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord - 1 + 'A', coord_no);
             flag = true;
         }
-        if (CheckMove(board, x, y, x - 1, y + 1, 0, player) && y + 1 < BOARD_SIZE && 0 <= x - 1 && !capture) // back right diagonal
+        if (CheckMove(Board, coord_no, y_coord, coord_no - 1, y_coord + 1, 0, player) && y_coord + 1 < BOARD_SIZE && 0 <= coord_no - 1 && !capture) // back right diagonal
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y + 1 + 'A', x);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord + 1 + 'A', coord_no);
             flag = true;
         }
-        if (CheckMove(board, x, y, x + 1, y - 1, 0, player) && 0 <= y - 1 && x + 1 < BOARD_SIZE && !capture) // forward left diagonal
+        if (CheckMove(Board, coord_no, y_coord, coord_no + 1, y_coord - 1, 0, player) && 0 <= y_coord - 1 && coord_no + 1 < BOARD_SIZE && !capture) // forward left diagonal
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y - 1 + 'A', x + 2);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord - 1 + 'A', coord_no + 2);
             flag = true;
         }
-        if (CheckMove(board, x, y, x + 1, y + 1, 0, player) && y + 1 < BOARD_SIZE && x + 1 < BOARD_SIZE && !capture) // forward right diagonal
+        if (CheckMove(Board, coord_no, y_coord, coord_no + 1, y_coord + 1, 0, player) && y_coord + 1 < BOARD_SIZE && coord_no + 1 < BOARD_SIZE && !capture) // forward right diagonal
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y + 1 + 'A', x + 2);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord + 1 + 'A', coord_no + 2);
             flag = true;
         }
-        if (CheckMove(board, x, y, x - 2, y - 2, 0, player) && 0 <= y - 2 && 0 <= x - 2) // back left capture posn
+        if (CheckMove(Board, coord_no, y_coord, coord_no - 2, y_coord - 2, 0, player) && 0 <= y_coord - 2 && 0 <= coord_no - 2) // back left capture posn
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y - 2 + 'A', x - 1);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord - 2 + 'A', coord_no - 1);
             flag = true;
         }
-        if (CheckMove(board, x, y, x - 2, y + 2, 0, player) && y + 2 < BOARD_SIZE && 0 <= x - 2) // back right capture posn
+        if (CheckMove(Board, coord_no, y_coord, coord_no - 2, y_coord + 2, 0, player) && y_coord + 2 < BOARD_SIZE && 0 <= coord_no - 2) // back right capture posn
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y + 2 + 'A', x - 1);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord + 2 + 'A', coord_no - 1);
             flag = true;
         }
-        if (CheckMove(board, x, y, x + 2, y - 2, 0, player) && 0 <= y - 2 && x + 2 < BOARD_SIZE) // forward left capture posn
+        if (CheckMove(Board, coord_no, y_coord, coord_no + 2, y_coord - 2, 0, player) && 0 <= y_coord - 2 && coord_no + 2 < BOARD_SIZE) // forward left capture posn
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y - 2 + 'A', x + 3);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord - 2 + 'A', coord_no + 3);
             flag = true;
         }
-        if (CheckMove(board, x, y, x + 2, y + 2, 0, player) && y + 2 < BOARD_SIZE && x + 2 < BOARD_SIZE) // forward right capture posn
+        if (CheckMove(Board, coord_no, y_coord, coord_no + 2, y_coord + 2, 0, player) && y_coord + 2 < BOARD_SIZE && coord_no + 2 < BOARD_SIZE) // forward right capture posn
         {
             if (print)
-                printf("\t %c%d -> %c%d\n", c, x + 1, y + 2 + 'A', x + 3);
+                printf("\t %c%d -> %c%d\n", coord_letter, coord_no + 1, y_coord + 2 + 'A', coord_no + 3);
             flag = true;
         }
     }
@@ -1115,7 +1115,7 @@ bool PossibleMoves(char c, int x, int board[BOARD_SIZE][BOARD_SIZE], int player,
     The suggest function prints all possible moves for a specific colour by calling the PossibleMoves
     function for each piece in the board.
 */
-void suggest(int u[BOARD_SIZE][BOARD_SIZE], int player, Game_Spec *G)
+void suggest(int Board[BOARD_SIZE][BOARD_SIZE], int player, Game_Spec *G)
 {
     /*
         we take in the current position of the board as input
@@ -1125,14 +1125,14 @@ void suggest(int u[BOARD_SIZE][BOARD_SIZE], int player, Game_Spec *G)
     bool isCapturePossible = false; //to check if a capture is possible, in which case we print only those values
     if (G -> Compulsory_Capture)
     {
-        isCapturePossible = Capturepossible(u, player);
+        isCapturePossible = Capturepossible(Board, player);
     }
     bool flag;
     for (int i = 0; i < BOARD_SIZE; i++)
     {
         for (int j = 1; j <= BOARD_SIZE; j++)
         {
-            flag = PossibleMoves(i + 'A', j, u, player, true, isCapturePossible);
+            flag = PossibleMoves(i + 'A', j, Board, player, true, isCapturePossible);
         }
     }
     printf("\n\n");
@@ -1142,7 +1142,7 @@ void suggest(int u[BOARD_SIZE][BOARD_SIZE], int player, Game_Spec *G)
     Checks if a capture is possible for the player
     Used in scenario when there is Compulsory Capture
 */
-bool Capturepossible(int u[BOARD_SIZE][BOARD_SIZE], int player)
+bool Capturepossible(int Board[BOARD_SIZE][BOARD_SIZE], int player)
 {
 
     bool flag;
@@ -1150,7 +1150,7 @@ bool Capturepossible(int u[BOARD_SIZE][BOARD_SIZE], int player)
     {
         for (int j = 1; j <= BOARD_SIZE; j++)
         {
-            flag = PossibleMoves(i + 'A', j, u, player, false, true); // we use the PossibleMoves function to see if moves are possible
+            flag = PossibleMoves(i + 'A', j, Board, player, false, true); // we use the PossibleMoves function to see if moves are possible
             if (flag)
             {
                 return flag;
@@ -1167,7 +1167,7 @@ bool Capturepossible(int u[BOARD_SIZE][BOARD_SIZE], int player)
     board and if no moves exist then the game has ended. The game returns true if the game has 
     ended
 */
-bool endgame(Game_Spec *G, int u[BOARD_SIZE][BOARD_SIZE], int Player)
+bool endgame(Game_Spec *G, int Board[BOARD_SIZE][BOARD_SIZE], int Player)
 {
     /*
         we use details such as number of pieces left from the game-spec G
@@ -1182,7 +1182,7 @@ bool endgame(Game_Spec *G, int u[BOARD_SIZE][BOARD_SIZE], int Player)
     for (int i = 0; i < BOARD_SIZE; i++)
     {
         for (int j = 0; j < BOARD_SIZE; j++)
-            if (u[i][j] == Player && PossibleMoves(j + 'A', i + 1, u, Player, false, false)) //if any piece has possible moves PossibleMoves returns true and
+            if (Board[i][j] == Player && PossibleMoves(j + 'A', i + 1, Board, Player, false, false)) //if any piece has possible moves PossibleMoves returns true and
                 return false;                                                                //thus the game has not ended, hence we return false
     }
     return true; // no pieces of the colours has possible moves, game has ended
