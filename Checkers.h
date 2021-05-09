@@ -16,35 +16,35 @@
 #define BLACK_KING -2
 
 
-typedef struct Change
+typedef struct Change                       // This structure stores the Moves as a node with all the necesaary data.
 {
-    char Initial_Char ;
-    char Final_Char;
-    int Initial_Int ;
-    int Final_Int;
-    int Type;                               //store the type of token which was moved
-    int Kill;                               // kill=1 , if that move involved any capture otherwise its 0
-    int Kill_Type;                          //kill_type stores the type of token which was captured (this helps in the  undo func)
-    int Change_To_King ;
-    struct Change* Next;                    // since its a linked list
-    struct Change* Prev;
+    char Initial_Char ;                     // The character co-ordinate of the initial square.
+    char Final_Char;                        // The character co-ordinate of the final square.
+    int Initial_Int ;                       // The integer co-ordinate of the initial square.
+    int Final_Int;                          // The integer co-ordinate of the final square.
+    int Type;                               // Store the type of token which was moved, that is, black/white/black king/white king.
+    int Kill;                               // Kill = 1/0 , if that move involves any capture otherwise kill = 1 or else it is 0.
+    int Kill_Type;                          // Kill_type stores the type of token which was captured (this helps in the UNDO func).
+    int Change_To_King ;                    // Stores 1 if the move changed the token to a king.
+    struct Change* Next;                    // Pointer to the next node(Move).
+    struct Change* Prev;                    // Pointer to the previous node(MOVE).
 
 }Move_Node;
                                                 
-typedef struct Game_Spec                    // this struct stores basic info
+typedef struct Game_Spec                    // this structure stores the game information.
 {
-    int Auto_Rotate;
-    int Compulsory_Capture;
-    int Num_Moves;
-    int Num_Black;
-    int Num_White;
-    int Num_Black_King;
-    int Num_White_King;
-    int Board_Orientation;
-    char Name_Of_Player1[100];
-    char Name_Of_Player2[100]; 
-    struct Change* Moves;                 // this is the linked list which stores all the moves
-    struct Change* Last_Move;             // this points to the last move , (helps in UNDO func)  
+    int Auto_Rotate;                        // Stores 1 if the auto-rotate feature of the game is ON, else it stores 0.
+    int Compulsory_Capture;                 // Stores 1 if the compulsory capture setting is ON, else it stores 0.
+    int Num_Moves;                          // Stores the number of moves played in the game.
+    int Num_Black;                          // Stores the number of black tokens (not including black king).
+    int Num_White;                          // Stores the number of white tokens (not including white king).
+    int Num_Black_King;                     // Stores the number of black kings.
+    int Num_White_King;                     // Stores the number of white kings.
+    int Board_Orientation;                  // A variable used to set the board orientation either to white's perspective (stores 1)/ black's perspective (stores -1).
+    char Name_Of_Player1[100];              // Stores the name of player 1.
+    char Name_Of_Player2[100];              // Stores the name of player 2 .   
+    struct Change* Moves;                   // Linked List pointing to the moves stored as DOUBLY LINKED LIST.
+    struct Change* Last_Move;               // Pointer to the last node (Move)(helps in UNDO func).  
 
 }Game_Spec;
 
@@ -74,6 +74,7 @@ bool PossibleMoves(char c,int x, int board[8][8],int player,bool print,bool capt
 bool endgame(Game_Spec* G,int u[8][8], int Player); //Checks if the game has ended
 void Next_K_Moves(int u[8][8], int player,int k ,Game_Spec* G);
 bool Capturepossible(int u[8][8],int player);
+void game_review(struct Game_Spec *g, int* Player);
 
 
 // Print_Board.c
