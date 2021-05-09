@@ -1024,7 +1024,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
 
             Next_K_Moves(u, *Player, K, G);                                     // Calls Function to Print Next K Moves
             
-            printf("\t THE ABOVE ARE ALL THE POSSIBLE POSITIONS AFTER K MOVES\n");
+            printf("\t THE ABOVE ARE ALL THE POSSIBLE POSITIONS AFTER %d MOVES\n", K );
 
             Print_Board(u, G, *Player);                                         // Prints Board
 
@@ -1553,7 +1553,7 @@ void Print_K_Moves(int u[BOARD_SIZE ][BOARD_SIZE ], int player, int k, int count
             }
         }
     }
-    if (k != constk)
+    //if (k != constk)
         Undo(v,V->G,&player,1) ; //used to go back to last move ;
     return ;  
 
