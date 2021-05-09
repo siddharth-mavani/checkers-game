@@ -1190,270 +1190,438 @@ bool endgame(Game_Spec *G, int u[BOARD_SIZE][BOARD_SIZE], int Player)
 
 //////////////////////////////////////////////////////////////////////////////*********************************************////////////////////////
 
-void copy(int v[BOARD_SIZE][BOARD_SIZE], int u[BOARD_SIZE][BOARD_SIZE])
+void copy(int v[BOARD_SIZE ][BOARD_SIZE ], int u [BOARD_SIZE ][BOARD_SIZE ])
 {
-    for (int i = 0; i < BOARD_SIZE; i = i + 1)
+    for (int i = 0 ; i < BOARD_SIZE  ; i = i + 1)
     {
-        for (int j = 0; j < BOARD_SIZE; j = j + 1)
+        for (int j = 0 ; j < BOARD_SIZE  ; j = j + 1)
         {
-            v[i][j] = u[i][j];
+            v[i][j] = u[i][j] ;
         }
     }
 
-    return;
+    return ;
 }
 
-void move(int u[BOARD_SIZE][BOARD_SIZE], int row, int colm, int row_new, int colm_new)
+void move (int u[BOARD_SIZE ][BOARD_SIZE ], int row,int colm,int row_new ,int colm_new)
 {
     if (abs(row_new - row) == 1)
     {
-        u[row_new][colm_new] = u[row][colm];
-        u[row][colm] = 0;
+        u[row_new][colm_new] = u[row][colm] ;
+        u[row][colm] = 0 ;
     }
 
     if (abs(row_new - row) == 2)
     {
-        u[row_new][colm_new] = u[row][colm];
-        u[row][colm] = 0;
-        u[(row + row_new) / 2][(colm + colm_new) / 2] = 0;
+        u[row_new][colm_new] = u[row][colm] ;
+        u[row][colm] = 0 ;
+        u[ ( row + row_new ) / 2][ ( colm + colm_new ) / 2] = 0 ;
     }
 
-    return;
+    return ;
 }
 
-int Change_To_King(int u[BOARD_SIZE][BOARD_SIZE], int player, int FinalRow, int InitialRow, int InitialColm, Vertex *V)
-{
-    int change = 0;
 
+int Change_To_King (int u[BOARD_SIZE ][BOARD_SIZE ], int player,int FinalRow, int InitialRow, int InitialColm, Vertex* V )
+{   
+    int change = 0;
+        
     if (FinalRow == 0 && u[InitialRow][InitialColm] == WHITE)
     {
         u[InitialRow][InitialColm] = WHITE_KING;
         change = 1;
-        V -> G -> Num_White_King++;
+        V->G->Num_White_King++;
     }
-
+    
     if (FinalRow == 7 && u[InitialRow][InitialColm] == BLACK)
     {
         u[InitialRow][InitialColm] = BLACK_KING;
         change = 1;
-        V -> G -> Num_Black_King++;
-    }
+        V->G->Num_Black_King++;
+       }
 
-    return change;
+    return change ;
 }
+
 
 // after every move have to check if the game has ended.. -- Done
 // need to keep int no of moves with final no of moves for the print_sequence function..
 // need to convert to kings.. -- Done
-void Print_K_Moves(int u[BOARD_SIZE][BOARD_SIZE], int player, int k, int count, Vertex *V)
+void Print_K_Moves(int u[BOARD_SIZE ][BOARD_SIZE ], int player, int k, int count, Vertex* V,int constk)
 {
-    int v[BOARD_SIZE][BOARD_SIZE] = {0};
+    int v[BOARD_SIZE ][BOARD_SIZE ] = {0} ;
     int change = 0;
 
-    if (endgame(V -> G, u, player) == true)
-    {
-        Print_Board(u, V -> G, player);
-        Undo(v, V -> G, &player, 1);
-        return;
-    }
+    bool is_capture_possible = false ;
 
-    for (int row = 0; row < BOARD_SIZE; row = row + 1)
+    if (endgame(V->G,u,player) == true)
     {
-        for (int colm = 0; colm < BOARD_SIZE; colm = colm + 1)
+        Print_Board(u,V->G,player) ;
+        Undo(v,V->G,&player,1) ;
+        return ;
+    }
+    
+
+    for (int row = 0 ; row < BOARD_SIZE  ; row = row + 1)
+    {
+        for (int colm = 0 ; colm < BOARD_SIZE  ; colm = colm + 1)
         {
             if (player * u[row][colm] > 0)
-            {
+                {
+                     if (V->G->Compulsory_Capture )
+                        is_capture_possible = Capturepossible(u,player) ;
+
+                    int CC = 0 ;
+                    if (is_capture_possible)
+                        CC = 2;
+            {   
                 if (count != 2)
+
+                
+
+                if (CheckMove(u,row,colm,row+1,colm+1,CC,player))
                 {
+                        copy(v,u) ;// copies the state of board from u to v
+                        move(v,row,colm,row+1,colm+1) ; // moves the piece from row,colm, to the next place
 
-                    if (CheckMove(u, row, colm, row + 1, colm + 1, 0, player))
+                        change = Change_To_King(u,player,row+1,row,colm,V) ;
+                        Insert_move(V->G,colm + 'A',colm+1 + 'A',row,row+1,u[row][colm] , 0,0, change) ;
+
+                    if ( k != 1)
                     {
-                        copy(v, u);                            // copies the state of board from u to v
-                        move(v, row, colm, row + 1, colm + 1); // moves the piece from row,colm, to the next place
-
-                        change = Change_To_King(u, player, row + 1, row, colm, V);
-                        Insert_move(V -> G, colm, colm + 1, row, row + 1, u[row][colm], 0, 0, change);
-
-                        if (k != 1)
-                        {
-                            Print_K_Moves(v, -player, k - 1, 0, V);
-                        }
-
-                        if (k == 1)
-                        {
-                            Print_Board(v, V -> G, player); // printing board
-                            Undo(v, V -> G, &player, 1);    //used to go back to last move
-                            return;
-                        }
-                    }
-
-                    if (CheckMove(u, row, colm, row - 1, colm - 1, 0, player))
-                    {
-                        copy(v, u);                            // copies the state of board from u to v
-                        move(v, row, colm, row - 1, colm - 1); // moves the piece from row,colm, to the next place
-
-                        change = Change_To_King(u, player, row - 1, row, colm, V);
-                        Insert_move(V -> G, colm, colm - 1, row, row - 1, u[row][colm], 0, 0, change);
-
-                        if (k != 1)
-                        {
-                            Print_K_Moves(v, -player, k - 1, 0, V);
-                        }
-
-                        if (k == 1)
-                        {
-                            Print_Board(v, V -> G, player); // printing board
-                            Undo(v, V -> G, &player, 1);    //used to go back to last move
-                            return;
-                        }
-                    }
-
-                    if (CheckMove(u, row, colm, row + 1, colm - 1, 0, player))
-                    {
-                        copy(v, u);                            // copies the state of board from u to v
-                        move(v, row, colm, row + 1, colm - 1); // moves the piece from row,colm, to the next place
-
-                        change = Change_To_King(u, player, row + 1, row, colm, V);
-                        Insert_move(V -> G, colm, colm - 1, row, row + 1, u[row][colm], 0, 0, change);
-
-                        if (k != 1)
-                        {
-                            Print_K_Moves(v, -player, k - 1, 0, V);
-                        }
-
-                        if (k == 1)
-                        {
-                            Print_Board(v, V -> G, player); // printing board
-                            Undo(v, V -> G, &player, 1);    //used to go back to last move
-                            return;
-                        }
-                    }
-
-                    if (CheckMove(u, row, colm, row - 1, colm + 1, 0, player))
-                    {
-                        copy(v, u);                            // copies the state of board from u to v
-                        move(v, row, colm, row - 1, colm + 1); // moves the piece from row,colm, to the next place
-
-                        change = Change_To_King(u, player, row - 1, row, colm, V);
-                        Insert_move(V -> G, colm, colm + 1, row, row - 1, u[row][colm], 0, 0, change);
-
-                        if (k != 1)
-                        {
-                            Print_K_Moves(v, -player, k - 1, 0, V);
-                        }
-
-                        if (k == 1)
-                        {
-                            Print_Board(v, V -> G, player); // printing board
-                            Undo(v, V -> G, &player, 1);    //used to go back to last move
-                            return;
-                        }
-                    }
-                }
-
-                if (CheckMove(u, row, colm, row + 2, colm + 2, 0, player) > 0)
-                {
-                    copy(v, u);
-                    move(v, row, colm, row + 2, colm + 2);
-                    change = Change_To_King(u, player, row + 2, row, colm, V);
-                    Insert_move(V -> G, colm, colm + 2, row, row + 2, u[row][colm], 1, u[(row + row + 2) / 2][(colm + colm + 2) / 2], change);
-
-                    count = 2;
-                    if (endgame(V -> G, u, player) == true)
-                    {
-                        Print_Board(u, V -> G, player);
-                        Undo(v, V -> G, &player, 1);
-                        return;
-                    }
-                    Print_K_Moves(v, player, k, count, V);
-                }
-
-                if (CheckMove(u, row, colm, row - 2, colm - 2, 0, player) > 0)
-                {
-                    copy(v, u);
-                    move(v, row, colm, row - 2, colm - 2);
-                    change = Change_To_King(u, player, row - 2, row, colm, V);
-                    Insert_move(V -> G, colm, colm - 2, row, row - 2, u[row][colm], 1, u[(row + row - 2) / 2][(colm + colm - 2) / 2], change);
-
-                    count = 2;
-                    if (endgame(V -> G, u, player) == true)
-                    {
-                        Print_Board(u, V -> G, player);
-                        Undo(v, V -> G, &player, 1);
-                        return;
-                    }
-                    Print_K_Moves(v, player, k, count, V);
-                }
-
-                if (CheckMove(u, row, colm, row + 2, colm - 2, 0, player) > 0)
-                {
-                    copy(v, u);
-                    move(v, row, colm, row + 2, colm - 2);
-                    change = Change_To_King(u, player, row + 2, row, colm, V);
-                    Insert_move(V -> G, colm, colm - 2, row, row + 2, u[row][colm], 1, u[(row + row + 2) / 2][(colm + colm - 2) / 2], change);
-
-                    count = 2;
-                    if (endgame(V -> G, u, player) == true)
-                    {
-                        Print_Board(u, V -> G, player);
-                        Undo(v, V -> G, &player, 1);
-                        return;
-                    }
-
-                    Print_K_Moves(v, player, k, count, V);
-                }
-
-                if (CheckMove(u, row, colm, row - 2, colm + 2, 0, player) > 0)
-                {
-                    copy(v, u);
-                    move(v, row, colm, row - 2, colm + 2);
-                    change = Change_To_King(u, player, row - 2, row, colm, V);
-                    Insert_move(V -> G, colm, colm + 2, row, row - 2, u[row][colm], 1, u[(row + row - 2) / 2][(colm + colm + 2) / 2], change);
-
-                    count = 2;
-                    if (endgame(V -> G, u, player) == true)
-                    {
-                        Print_Board(u, V -> G, player);
-                        Undo(v, V -> G, &player, 1);
-                        return;
-                    }
-
-                    Print_K_Moves(v, player, k, count, V);
-                }
-
-                if (count == 2) // used to decide when to make next move in case of multiple capture..
-                {
-                    copy(v, u);
-                    // no need to check for king as it is already done in the previous step
-                    Insert_move(V -> G, colm, colm + 1, row, row + 1, u[row][colm], 0, 0, 0);
-
-                    if (k != 1)
-                    {
-                        Print_K_Moves(v, -player, k - 1, 0, V);
+                        Print_K_Moves(v,-player,k-1,0,V,constk) ;
                     }
 
                     if (k == 1)
                     {
-                        Print_Board(v, V -> G, player); // printing board
+                        Print_Board(v, V->G , player) ;// printing board
+                        Undo(v,V->G,&player,1) ; //used to go back to last move
+                        //return ;
                     }
                 }
+
+                if (CheckMove(u,row,colm,row-1,colm-1,CC,player))
+                {
+                        copy(v,u) ;// copies the state of board from u to v
+                        move(v,row,colm,row-1,colm-1) ; // moves the piece from row,colm, to the next place
+
+                        change = Change_To_King(u,player,row-1,row,colm,V) ;
+                        Insert_move(V->G,colm + 'A',colm-1 + 'A',row,row-1,u[row][colm] , 0,0,change) ;
+
+                    if ( k != 1)
+                    {
+                        Print_K_Moves(v,-player,k-1,0,V,constk) ;
+                    }
+
+                    if (k == 1)
+                    {
+                        Print_Board(v, V->G, player) ;// printing board
+                        Undo(v,V->G,&player,1) ;//used to go back to last move
+                        //return ;
+                    }
+                }
+
+                if (CheckMove(u,row,colm,row+1,colm-1,CC,player))
+                {
+                        copy(v,u) ;// copies the state of board from u to v
+                        move(v,row,colm,row+1,colm-1) ; // moves the piece from row,colm, to the next place
+
+                        change = Change_To_King(u,player,row+1,row,colm,V) ;
+                        Insert_move(V->G,colm + 'A',colm-1 + 'A',row,row+1,u[row][colm] , 0,0,change) ;
+
+                    if ( k != 1)
+                    {
+                        Print_K_Moves(v,-player,k-1,0,V,constk) ;
+                    }
+
+                    if (k == 1)
+                    {
+                        Print_Board(v, V->G, player) ;// printing board
+                        Undo(v,V->G,&player,1) ;//used to go back to last move
+                        //return ;
+                    }
+                }
+
+
+                if (CheckMove(u,row,colm,row-1,colm+1,CC,player))
+                {
+                        copy(v,u) ;// copies the state of board from u to v
+                        move(v,row,colm,row-1,colm + 1) ; // moves the piece from row,colm, to the next place
+
+                        change = Change_To_King(u,player,row-1,row,colm,V) ;
+                        Insert_move(V->G,colm + 'A',colm+1 + 'A',row,row-1, u[row][colm], 0,0,change) ;
+
+                    if ( k != 1)
+                    {
+                        Print_K_Moves(v,-player,k-1,0,V,constk) ;
+                    }
+
+                    if (k == 1)
+                    {
+                        Print_Board(v,V->G , player) ;// printing board
+                        Undo(v,V->G,&player,1) ;//used to go back to last move
+                        //return ;
+                    }
+                }
+
+                }
+            
+
+                    if (CheckMove(u,row,colm,row+2,colm+2,CC,player) > 0)
+                    {
+                        copy(v,u) ;
+                        move (v,row,colm,row+2,colm+2) ;
+                        change = Change_To_King(u,player,row+2,row,colm,V) ;
+                        Insert_move(V->G,colm + 'A',colm+2 + 'A',row,row+2,u[row][colm] ,1,u[(row + row + 2) / 2][(colm + colm + 2) / 2],change) ;
+                        if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] > 0)
+                            V->Num_W_Capture++;
+                        else if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] < 0)
+                            V->Num_B_Capture++;
+                        
+                        count = 2 ;
+                        if (endgame(V->G,u,player) == true)
+                        {
+                            Print_Board(u,V->G,player) ;
+                            Undo(v,V->G,&player,1) ;
+                            return ;
+                        }
+                        Print_K_Moves(v,player,k,count,V,constk) ;
+                        if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] > 0)
+                            V->Num_W_Capture--;
+                        else if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] < 0)
+                            V->Num_B_Capture--;
+                    }
+
+
+                    if (CheckMove(u,row,colm,row-2,colm-2, CC , player) > 0)
+                    {
+                        copy(v,u) ;
+                        move (v,row,colm,row-2,colm-2) ;
+                        change = Change_To_King(u,player,row-2,row,colm,V) ;
+                        Insert_move(V->G,colm + 'A',colm-2 + 'A', row,row-2, u[row][colm], 1,u[(row + row - 2) / 2][(colm + colm - 2) / 2],change) ;
+                        if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] > 0)
+                            V->Num_W_Capture++;
+                        else if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] < 0)
+                            V->Num_B_Capture++;
+
+                        count = 2 ;
+                        if (endgame(V->G,u,player) == true)
+                        {
+                            Print_Board(u,V->G,player) ;
+                            Undo(v,V->G,&player,1) ;
+                            return ;
+                        }
+                        Print_K_Moves(v,player,k,count,V,constk) ;
+                        if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] > 0)
+                            V->Num_W_Capture--;
+                        else if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] < 0)
+                            V->Num_B_Capture--;
+                    }
+
+                    
+                    if (CheckMove(u,row,colm,row+2,colm-2, CC , player) > 0)
+                    {
+                        copy(v,u) ;
+                        move (v,row,colm,row+2,colm-2) ;
+                        change = Change_To_King(u,player,row+2,row,colm,V) ;
+                        Insert_move(V->G,colm + 'A',colm-2 + 'A',row,row+2,u[row][colm] , 1,u[(row + row + 2) / 2][(colm + colm - 2) / 2], change) ;
+                        if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] > 0)
+                            V->Num_W_Capture++;
+                        else if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] < 0)
+                            V->Num_B_Capture++;
+
+                        count = 2 ;
+                        if (endgame(V->G,u,player) == true)
+                        {
+                            Print_Board(u,V->G,player) ;
+                            Undo(v,V->G,&player,1) ;
+                            return ;
+                        }
+
+                        Print_K_Moves(v,player,k,count,V,constk) ;
+                        if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] > 0)
+                            V->Num_W_Capture--;
+                        else if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] < 0)
+                            V->Num_B_Capture--;
+                    }
+
+
+                    if (CheckMove(u,row,colm,row-2,colm+2, CC ,player) > 0)
+                    {
+                        copy(v,u) ;
+                        move (v,row,colm,row-2,colm+2) ;
+                        change = Change_To_King(u,player,row-2,row,colm,V) ;
+                        Insert_move(V->G,colm + 'A',colm+2 + 'A',row,row-2, u[row][colm], 1,u[(row + row -2) / 2 ][ ( colm + colm + 2 ) / 2],change) ;
+                        
+                        if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] > 0)
+                            V->Num_W_Capture++;
+                        else if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] < 0)
+                            V->Num_B_Capture++;
+                        count = 2 ;
+                        if (endgame(V->G,u,player) == true)
+                        {
+                            Print_Board(u,V->G,player) ;
+                            Undo(v,V->G,&player,1) ;
+                            return ;
+                        }
+
+                        Print_K_Moves(v,player,k,count,V,constk) ;
+                        if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] > 0)
+                            V->Num_W_Capture--;
+                        else if (u[(row + row + 2) / 2][(colm + colm + 2) / 2] < 0)
+                            V->Num_B_Capture--;
+                    }
+
+
+                   if (count == 2)                        // used to decide when to make next move in case of multiple capture..
+                    {
+                        copy(v,u) ;
+                        // no need to check for king as it is already done in the previous step
+                        //Insert_move(V->G,colm,colm+1,row,row+1,u[row][colm] , 0,0, 0) ;
+
+                        if (k != 1)
+                        {
+                            Print_K_Moves(v,-player,k-1,0,V,constk) ;
+                        }
+
+                        if (k == 1)
+                        {
+                            Print_Board(v,V->G , player) ;// printing board
+                        }
+                    }
+
+            }
+        }
+    }
+    if (k != constk)
+        Undo(v,V->G,&player,1) ; //used to go back to last move ;
+    return ;  
+
+}
+
+void Next_K_Moves(int u[BOARD_SIZE ][BOARD_SIZE ], int player,int k ,Game_Spec* G)
+{
+    bool is_capture_possible = false ;
+    
+    Vertex* V = (Vertex*) malloc (sizeof(Vertex)) ;
+
+    V->Num_B_Capture = 0;
+    V->Num_W_Capture = 0;
+    V->G = G ;
+    int count ;
+    int change ;
+    int v[8][8] ;
+
+    if (k == 1)
+    {
+        for (int row = 0 ; row < 8 ; row = row + 1)
+        {
+            for (int colm = 0 ; colm < 8 ; colm = colm + 1)
+            {
+               count = 0 ;
+               if (u[row][colm] * player > 0)
+               {
+
+                    if (V->G->Compulsory_Capture )
+                        is_capture_possible = Capturepossible(u,player) ;
+
+                    int CC = 0 ;
+                    if (is_capture_possible)
+                        CC = 2;
+
+                    if (CheckMove(u,row,colm,row+1,colm+1,CC,player))
+                    {   
+                        change = Change_To_King(u,player,row+1,row,colm,V) ;
+                        copy(v,u) ;
+                        move(v,row,colm,row + 1,colm+1) ;
+                        Insert_move(V->G,colm + 'A',colm + 1 + 'A',row,row+1,u[row][colm],0,0,change) ;
+                        Print_Board(v,V->G,player) ;
+                        Undo(v,V->G,&player,1) ;
+                    }
+                   if (CheckMove(u,row,colm,row-1,colm-1,CC,player))
+                    {   
+                        change = Change_To_King(u,player,row-1,row,colm,V) ;
+                        copy(v,u) ;
+                        move(v,row,colm,row - 1,colm-1) ;
+                        Insert_move(V->G,colm + 'A',colm - 1 + 'A',row,row - 1 ,u[row][colm],0,0,change) ;
+                        Print_Board(v,V->G,player) ;
+                        Undo(v,V->G,&player,1) ;
+                    }
+                    if (CheckMove(u,row,colm,row+1,colm-1,CC,player))
+                    {   
+                        change = Change_To_King(u,player,row+1,row,colm,V) ;
+                        copy(v,u) ;
+                        move(v,row,colm,row + 1,colm-1) ;
+                        Insert_move(V->G,colm + 'A',colm - 1 + 'A',row,row + 1 ,u[row][colm],0,0,change) ;
+                        Print_Board(v,V->G,player) ;
+                        Undo(v,V->G,&player,1) ;
+                    }
+                    if (CheckMove(u,row,colm,row-1,colm+1,CC,player))
+                    {   
+                        change = Change_To_King(u,player,row-1,row,colm,V) ;
+                        copy(v,u) ;
+                        move(v,row,colm,row - 1,colm+1) ;
+                        Insert_move(V->G,colm + 'A',colm + 1 + 'A',row,row - 1 ,u[row][colm],0,0,change) ;
+                        Print_Board(v,V->G,player) ;
+                        Undo(v,V->G,&player,1) ;
+                    }
+
+                    
+
+                    
+                    if (CheckMove(u,row,colm,row+2,colm+2,CC,player))
+                    {   
+                        change = Change_To_King(u,player,row+2,row,colm,V) ;
+                        copy(v,u) ;
+                        move(v,row,colm,row + 2,colm+2) ;
+                        Insert_move(V->G,colm + 'A',colm + 2 + 'A',row,row + 2 ,u[row][colm],1,u[row][colm],change) ;
+                        Print_Board(v,V->G,player) ;
+                        Undo(v,V->G,&player,1) ;
+                    }
+                    
+                    if (CheckMove(u,row,colm,row-2,colm+2,CC,player))
+                    {   
+                        change = Change_To_King(u,player,row-2,row,colm,V) ;
+                        copy(v,u) ;
+                        move(v,row,colm,row - 2,colm+2) ;
+                        Insert_move(V->G,colm + 'A',colm + 2 + 'A',row,row - 2 ,u[row][colm],1,u[row][colm],change) ;
+                        Print_Board(v,V->G,player) ;
+                        Undo(v,V->G,&player,1) ;
+                    }
+
+
+                    if (CheckMove(u,row,colm,row+2,colm-2,CC,player))
+                    {   
+                        change = Change_To_King(u,player,row+2,row,colm,V) ;
+                        copy(v,u) ;
+                        move(v,row,colm,row + 2,colm-2) ;
+                        Insert_move(V->G,colm + 'A',colm - 2 + 'A',row,row + 2 ,u[row][colm],1,u[row][colm],change) ;
+                        Print_Board(v,V->G,player) ;
+                        Undo(v,V->G,&player,1) ;
+                    }
+
+
+                    if (CheckMove(u,row,colm,row-2,colm-2,CC,player))
+                    {   
+                        change = Change_To_King(u,player,row-2,row,colm,V) ;
+                        copy(v,u) ;
+                        move(v,row,colm,row - 2,colm-2) ;
+                        Insert_move(V->G,colm + 'A',colm - 2 + 'A',row,row - 2 ,u[row][colm],1,u[row][colm],change) ;
+                        Print_Board(v,V->G,player) ;
+                        Undo(v,V->G,&player,1) ;
+                    }
+               } 
             }
         }
     }
 
-    Undo(v, V -> G, &player, 1); //used to go back to last move ;
-    return;
-}
+    else
+    {
+        Print_K_Moves(u,player,k,0,V,k) ;
+    }
 
-void Next_K_Moves(int u[BOARD_SIZE][BOARD_SIZE], int player, int k, Game_Spec *G)
-{
-    Vertex *V = (Vertex *)malloc(sizeof(Vertex));
+    free(V) ;
 
-    V -> Num_B_Capture = 0;
-    V -> Num_W_Capture = 0;
-    V -> G = G;
+    return ;
 
-    Print_K_Moves(u, player, k, 0, V);
-
-    return;
 }
