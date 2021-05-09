@@ -922,7 +922,7 @@ bool endgame(Game_Spec* G,int u[BOARD_SIZE ][BOARD_SIZE ], int Player)
     for(int i=0;i<BOARD_SIZE ;i++)
     {
         for(int j=0;j<BOARD_SIZE ;j++)
-            if(u[i][j]==Player && PossibleMoves(j+'A',i+1,u,val,false,false))                                          //if any piece has possible moves PossibleMoves returns true and 
+            if(u[i][j]==Player && PossibleMoves(j+'A',i+1,u,Player,false,false))                                          //if any piece has possible moves PossibleMoves returns true and 
                 return false;                                                                                       //thus the game has not ended, hence we return false
     }
     return true;                                                                                                    // no pieces of the colours has possible moves, game has ended
