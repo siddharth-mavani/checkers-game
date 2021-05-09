@@ -433,14 +433,43 @@ int Name_Is_Available(char Name_Of_Game[105])
     fclose(fp);
 }
 
+// Allows user to update an already saved game.
+void Update_gamefile(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec* G, char Name_Of_Game[106])
+{
+    
+    char dummy[106];                                                        // Declaring a dummy string to store the name of the game entered.
+    char final_name[106];                                                   // Stores the final name of the game file.
+    strcpy(dummy, Name_Of_Game);
+    strcpy(final_name, dummy);
+    strcat(dummy, ".txt");
+
+    if(Name_Is_Available(dummy))                                            // Checking if the file with the entered name exists or not.
+    {
+        int delete = remove(dummy);                                         // Deletes the already saved files.                    
+        Save(u, Player, G, Name_Of_Game);                                   // Makes and saves a file with the same name with updated moves.
+    }
+    else
+    {
+        while (!(Name_Is_Available(dummy)))                                 // Running a loop untill user inputs correct file name
+        { 
+            printf("\t THE GAME WITH THIS NAME DOES NOT EXIST, PLEASE ENTER ANOTHER NAME: ");
+            scanf(" %s", dummy);
+            strcpy(final_name, dummy);
+            strcat(dummy, ".txt");                                          // Game will be stored as <Name_Of_Game>.txt
+        }
+        Save(u, Player, G, Name_Of_Game);
+    }    
+    return;
+}
+
 // This Functions allows the user to Save the Current Game
-void Save(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec *G)
+void Save(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec *G, char Name_Of_Game[106])
 {
 
-    char Name_Of_Game[106];
+    // char Name_Of_Game[106];
 
-    printf("Enter Name of the Game: ");
-    scanf(" %s", Name_Of_Game);
+    // printf("Enter Name of the Game: ");
+    // scanf(" %s", Name_Of_Game);
 
     strcat(Name_Of_Game, ".txt");                                   // Game will be stored as <Name_Of_Game>.txt
 
@@ -448,7 +477,7 @@ void Save(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec *G)
     // Checking if the Game exists
     while (Name_Is_Available(Name_Of_Game))                         // Running a loop untill user inputs correct file name
     { 
-        printf("\t The Game does already exists, please enter another name: ");
+        printf("\t THE GAME DOES ALREADY EXISTS, PLEASE ENTER ANOTHER NAME: ");
         scanf(" %s", Name_Of_Game);
 
         strcat(Name_Of_Game, ".txt");                               // Game will be stored as <Name_Of_Game>.txt
@@ -583,10 +612,10 @@ void game_review(struct Game_Spec *g, int *Player) // The Review Game Function.
         printf("\t NO MOVES TILL THIS POINT\n");
         return;
     }
-    int temp[8][8];                                                                         // Initialising a temporary array to store the position of the board for review.
-    Init(temp);                                                                             // Setting the board using the Init Function.
-    char c;                                                                                 // Character to store the choice of player either to move to next/previous/quit.
-    struct Change *curr = g  ->  Moves  ->  Next;                                                   // Pointer to the current move (node) which keeps getting updated in throughout the function run-time.
+    int temp[8][8];                                                                             // Initialising a temporary array to store the position of the board for review.
+    Init(temp);                                                                                 // Setting the board using the Init Function.
+    char c;                                                                                     // Character to store the choice of player either to move to next/previous/quit.
+    struct Change *curr = g  ->  Moves  ->  Next;                                               // Pointer to the current move (node) which keeps getting updated in throughout the function run-time.
     int orientation = g  ->  Board_Orientation;                                                 // Stores board-orientation, 1 for black's perspective, and -1 for white's perspective
 
     Print_Board(temp, g, *Player);
@@ -594,7 +623,7 @@ void game_review(struct Game_Spec *g, int *Player) // The Review Game Function.
     printf("\t YOUR CHOICE: ");
     scanf(" %c", &c);
 
-    if (!((c == 'P' || c == 'p') || (c == 'Q' || c == 'q') || (c == 'N' || c == 'n')))      // Checks if the character input is valid or not.
+    if (!((c == 'P' || c == 'p') || (c == 'Q' || c == 'q') || (c == 'N' || c == 'n')))          // Checks if the character input is valid or not.
     {
         while (1)
         {
@@ -604,7 +633,7 @@ void game_review(struct Game_Spec *g, int *Player) // The Review Game Function.
                 break;
         }
     }
-    if (c == 'P' || c == 'p')                                                               // Checks if the character input is P and scans the character again and again till the character input is valid.
+    if (c == 'P' || c == 'p')                                                                   // Checks if the character input is P and scans the character again and again till the character input is valid.
     {
         while (1)
         {
@@ -613,7 +642,7 @@ void game_review(struct Game_Spec *g, int *Player) // The Review Game Function.
             printf("\t YOUR CHOICE: ");
             scanf(" %c", &c);
 
-            if (!((c == 'Q' || c == 'q') || (c == 'N' || c == 'n')))                        // Checks for valid input with respect to the condition.
+            if (!((c == 'Q' || c == 'q') || (c == 'N' || c == 'n')))                            // Checks for valid input with respect to the condition.
             {
                 while (1)
                 {
@@ -627,7 +656,7 @@ void game_review(struct Game_Spec *g, int *Player) // The Review Game Function.
                 break;
         }
     }
-    if (c == 'Q' || c == 'q')                                                               // Checks if user wants to quit reviewing.
+    if (c == 'Q' || c == 'q')                                                                   // Checks if user wants to quit reviewing.
     {
         return;
     }
@@ -635,11 +664,11 @@ void game_review(struct Game_Spec *g, int *Player) // The Review Game Function.
     while (curr != NULL)
     {
         int Initial_Int = curr  ->  Initial_Int;                                                // Stores the numeric part of co-ordinate of initial square.
-        int Final_Int = curr -> Final_Int;                                                    // Stores the numeric part of co-ordinate of final square.
-        char Initial_Char = curr -> Initial_Char;                                             // Stores the character part of co-ordinate of initial square.
-        char Final_Char = curr -> Final_Char;                                                 // Stores the character part of co-ordinate of final square.
-        int a = Initial_Char - 'A';                                                         // Stores the Initial_Char as an integer to be used in the array.
-        int b = Final_Char - 'A';                                                           // Stores the Final_Char as an integer to be used in the array.
+        int Final_Int = curr -> Final_Int;                                                      // Stores the numeric part of co-ordinate of final square.
+        char Initial_Char = curr -> Initial_Char;                                               // Stores the character part of co-ordinate of initial square.
+        char Final_Char = curr -> Final_Char;                                                   // Stores the character part of co-ordinate of final square.
+        int a = Initial_Char - 'A';                                                             // Stores the Initial_Char as an integer to be used in the array.
+        int b = Final_Char - 'A';                                                               // Stores the Final_Char as an integer to be used in the array.
 
         // array change conditions: -
 
@@ -917,7 +946,18 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
         }
         else if (strcmp(Command, "SAVE") == 0)                                  // Checks if 'Save' is inputted
         {                        
-            Save(u, *Player, G);                                                // Calls Function to Save Game
+            char Name_Of_Game[106];
+            printf("\t ENTER NAME OF THE GAME: ");
+            scanf(" %s", Name_Of_Game);
+            Save(u, *Player, G, Name_Of_Game);                                  // Calls Function to Save Game
+        }
+        else if (strcmp(Command, "UPDATE") == 0)
+        {
+            char Name_Of_Game[106];
+            printf("\t ENTER NAME OF THE GAME: ");
+            scanf(" %s", Name_Of_Game);
+            Update_gamefile(u, *Player, G, Name_Of_Game);
+            printf("\n\n");
         }
         else if (strcmp(Command, "NEXTK") == 0)                                 // Checks if 'NextK' is inputted
         { 
@@ -940,17 +980,27 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
         { 
 
             char permission[5];
-            printf("\t DO YOU WANT TO SAVE THE GAME ? ");
+            printf("\t DO YOU WANT TO SAVE THE GAME OR UPDATE A PRE-EXISTING FILE?\n\t (ENTER, 'YES' TO SAVE, 'NO' TO EXIT, AND 'UPDATE' TO UPDATE A PRE-EXISTIMG FILE)\n\n\t YOUR CHOICE = ");
             scanf(" %s", permission);
 
             // Checks is Player Agreed to Save Game before Quitting
             if (strcmp(permission, "YES") == 0 || strcmp(permission, "Y") == 0 || strcmp(permission, "yes") == 0 || strcmp(permission, "y") == 0)
             {
-
-                Save(u, *Player, G);                                            // Calls Function to Save Game
+                char Name_Of_Game[106];
+                printf("\t ENTER NAME OF THE GAME: ");
+                scanf(" %s", Name_Of_Game);
+                Save(u, *Player, G, Name_Of_Game);                                            // Calls Function to Save Game
                 return;
             }
-
+            if(strcmp(permission, "UPDATE") == 0)
+            {
+                char Name_Of_Game[106];
+                printf("\t ENTER NAME OF THE GAME: ");
+                scanf(" %s", Name_Of_Game);
+                Update_gamefile(u, *Player, G, Name_Of_Game);
+                printf("\n\n");
+            }
+            
             return;
         }
         else if (strcmp(Command, "SUGGEST") == 0)                               // Checks if 'SUGGEST' is inputted
