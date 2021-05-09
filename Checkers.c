@@ -324,7 +324,7 @@ int Move(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call
             {
                 printf("3 POSSIBLE CAPTURES ARE POSSIBLE\n");
             }
-            printf("IF YOU WANT TO UNDO PREVIOUS CAPTUE ENTER \"L4ST\"\n");
+            printf("IF YOU WANT TO UNDO PREVIOUS CAPTUE ENTER \"U1\"\n");
             printf("ENTER CORDINATES OF THE FINAL SQUARE: ");
         }
 
@@ -343,8 +343,8 @@ int Move(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call
         // Asking for final coordinates
         char dummy;
         scanf("%c%c%d", &dummy, &FinalChar, &FinalInt);
-        //printf("%c%c%dduu",dummy,FinalChar,FinalInt);
-        if (FinalChar == 'L' && FinalInt == 4)
+        printf("%c%c%dduu",dummy,FinalChar,FinalInt);
+        if (FinalChar == 'U' && FinalInt == 1)
         {
             if (G -> Auto_Rotate)
             {
