@@ -670,7 +670,6 @@ void game_review(struct Game_Spec *g, int *Player) // The Review Game Function.
     int orientation = g  ->  Board_Orientation;                                                 // Stores board-orientation, 1 for black's perspective, and -1 for white's perspective
 
     Print_Board(temp, g, *Player);
-    printf("\t COMMANDS:\n          \t ENTER N FOR NEXT STEP \n          \t ENTER P FOR PREVIOUS STEP\n          \t ENTER Q TO STOP REVIEWING\n\n");
     printf("\t YOUR CHOICE: ");
     scanf(" %c", &c);
 
@@ -819,10 +818,6 @@ H2:             scanf(" %c", &response);
         {
             return;
         }
-
-        // swap(&temp[a1][a3], &temp[b1][b3]);
-        // Print_Board(temp, orientation);
-        //printf("RR  %c\n", c);
     }
 
     return;
@@ -836,10 +831,10 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
 
     printf("\n\n");
     Print_Board(u, G, *Player);                                             // Prints Board
+    int Temp_Board_Orientation = G -> Board_Orientation;                    // This will give Orientation when User Switches ON Auto Rotate
 
     while (1)
     {
-
         printf("\t ENTER COMMAND: ");
         scanf("%s", Command);
 
@@ -857,13 +852,13 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                     if (*Player < 0)                                        // Black has won
                     { 
 
-                        printf("\t %s HAS WON THE GAME!!!!!\n\tCONGRATULATIONS\n", G -> Name_Of_Player1);
+                        printf("\t %s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n", G -> Name_Of_Player1);
                         printf("\t BETTER LUCK NEXT TIME %s\n", G -> Name_Of_Player2);
                     }
                     else                                                    // White has won
                     { 
 
-                        printf("\t %s HAS WON THE GAME!!!!!\n\tCONGRATULATIONS\n", G -> Name_Of_Player2);
+                        printf("\t %s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n", G -> Name_Of_Player2);
                         printf("\t BETTER LUCK NEXT TIME %s\n", G -> Name_Of_Player1);
                     }
 
@@ -871,13 +866,15 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                 }
                 else
                 {
-
+                    
                     *Player = -*Player;                                     // Switches Player
 
                     if (G -> Auto_Rotate)
                     {                                                       // Checks if Auto-Rotate is on
                         G -> Board_Orientation = -G -> Board_Orientation;   // Toggles Board-Orientation
                     }
+
+                    Temp_Board_Orientation = - Temp_Board_Orientation;  // Switches Temporary Board Orientation
 
                     Print_Board(u, G, *Player);                             // Prints Board
                 }
@@ -913,6 +910,8 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                             G -> Board_Orientation = -G -> Board_Orientation;   // Toggles Board-Orientation
                         }
 
+                        Temp_Board_Orientation = - Temp_Board_Orientation;  // Switches Temporary Board Orientation
+                        
                         Print_Board(u, G, *Player);                             // Prints Board
                     }
                     else
@@ -931,14 +930,15 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                     {
 
                         Undo(u, G, Player, 0);                                  // Undo's the Current Move
-
                         *Player = -*Player;                                     // Switches Player
 
                         if (G -> Auto_Rotate)
                         {                                                       // Checks if Auto-Rotate is on
                             G -> Board_Orientation = -G -> Board_Orientation;   // Toggles Board-Orientation
                         }
-
+                        
+                        Temp_Board_Orientation = - Temp_Board_Orientation;  // Switches Temporary Board Orientation
+                        
                         Print_Board(u, G, *Player);                             // Prints Board
                     }
                     else
@@ -953,12 +953,14 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             int choice;
             while(1){
 
-                printf("\n\t\t 1. AUTO ROTATE: %s \n", (G -> Auto_Rotate > 0) ?  "ON" :  "OFF");                      // Prints if Auto Rotate is On or Off
-                printf("\t\t 2. COMPULSORY CAPTURE: %s \n", (G -> Compulsory_Capture > 0) ?  "ON" :  "OFF");         // Prints if Compulsory Capture is On or Off
+                printf("\n\t\t 1. AUTO ROTATE: %s \n", (G -> Auto_Rotate > 0) ?  "ON" :  "OFF");                    // Prints if Auto Rotate is On or Off
+                printf("\t\t 2. COMPULSORY CAPTURE: %s \n", (G -> Compulsory_Capture > 0) ?  "ON" :  "OFF");        // Prints if Compulsory Capture is On or Off
                 printf("\t\t 3. BACK TO GAME \n\n");
                                                                                             
                 printf("\t\t ENTER YOUR CHOICE: ");                                   
                 scanf(" %d", &choice);
+
+                printf("\n");
 
                 if(choice == 1){
 
@@ -970,9 +972,12 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                          // Checks if User wants Auto Rotate to be ON
                         if(strcmp(s, "YES") == 0 || strcmp(s, "Y") == 0 || strcmp(s, "yes") == 0 || strcmp(s, "y") == 0){
                                 G -> Auto_Rotate = 1;
+                                G -> Board_Orientation = Temp_Board_Orientation;                                    // Assigning Current Board Orientation to Game Specs
                         }
                         else
+                        {
                                 G -> Auto_Rotate = 0;
+                        }
                 }
                 else if(choice == 2){
 
@@ -1031,7 +1036,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
         { 
 
             char permission[5];
-            printf("\t DO YOU WANT TO SAVE THE GAME OR UPDATE A PRE-EXISTING FILE?\n\t (ENTER, 'YES' TO SAVE, 'NO' TO EXIT, AND 'UPDATE' TO UPDATE A PRE-EXISTIMG FILE)\n\n\t YOUR CHOICE = ");
+            printf("\t DO YOU WANT TO SAVE/UPDATE GAME BEFORE QUITTING ? ");
             scanf(" %s", permission);
 
             // Checks is Player Agreed to Save Game before Quitting

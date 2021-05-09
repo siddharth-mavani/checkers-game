@@ -8,7 +8,7 @@ int main()
         char Name_Of_Player1[100], Name_Of_Player2[100];
 
         while(1){
-    
+START:    
                 // Printing the Start Menu of the Game
                 printf("\n\n\t\t CHECKERS GAME\n\n");
                 printf("\t 1. START NEW GAME\n");
@@ -48,7 +48,11 @@ int main()
 
                         char Name_Of_Game[105];                                     
                         printf("\t ENTER NAME OF GAME: ");                      
-                        scanf(" %s", Name_Of_Game);                                 
+                        scanf(" %s", Name_Of_Game);
+
+                        if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
+                                continue;                                           // Goes Back to Main Menu    
+                        }                                 
 
                         strcat(Name_Of_Game, ".txt");                               // Game will be stored as <Name_Of_Game>.txt
 
@@ -56,7 +60,11 @@ int main()
                         while(!Name_Is_Available(Name_Of_Game)){
 
                                 printf("\t THE GAME DOES NOT EXIST, PLEASE ENTER A VALID NAME: ");
-                                scanf(" %s", Name_Of_Game);                         
+                                scanf(" %s", Name_Of_Game);
+
+                                if(strcmp(Name_Of_Game, "BACK") == 0){              // Checks if 'BACK' is inputted 
+                                        goto START;                                 // Goes Back to Main Menu    
+                                }                                       
 
                                 strcat(Name_Of_Game, ".txt");                       // Game will be stored as <Name_Of_Game>.txt
                         
