@@ -7,6 +7,9 @@
 #include<assert.h>
 #include<stdbool.h>
 
+#define INSTRUCTION_SIZE 100
+#define COMMAND_SIZE 100
+#define NAME_SIZE 106
 #define BOARD_SIZE 8
 
 #define EMPTY 0

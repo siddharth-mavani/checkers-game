@@ -23,7 +23,7 @@ Move_Node *Makenode(void)
 }
 
 // Initializes and returns a new game with the settings and gata passed as variables.
-Game_Spec *Init_Game(int Auto_Rotate, int Compulsory_Capture, int Num_Moves, int Num_Black, int Num_White, int Num_Black_King, int Num_White_King, int Board_Orientation, char Name_Of_Player1[100], char Name_Of_Player2[100])
+Game_Spec *Init_Game(int Auto_Rotate, int Compulsory_Capture, int Num_Moves, int Num_Black, int Num_White, int Num_Black_King, int Num_White_King, int Board_Orientation, char Name_Of_Player1[NAME_SIZE], char Name_Of_Player2[NAME_SIZE])
 {
     // Allocating the memory.
     Game_Spec *Game = (Game_Spec *)malloc(sizeof(Game_Spec));
@@ -90,7 +90,10 @@ int Undo(int Board[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G, int *Player, in
 
     if (G -> Num_Moves == 0)                        // if Num_Moves==0 we cant undo anymore
     {
-        printf("\t NO MOVES LEFT TO UNDO\n");
+        if(!CallFromKmoves)
+        {
+            printf("\t NO MOVES LEFT TO UNDO\n");
+        }
         return 0;
     }
 
@@ -485,11 +488,11 @@ int Name_Is_Available(char Name_Of_Game[105])
 }
 
 // Allows user to update an already saved game.
-void Update_gamefile(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec* G, char Name_Of_Game[106])
+void Update_gamefile(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec* G, char Name_Of_Game[NAME_SIZE])
 {
     
-    char dummy[106];                                                        // Declaring a dummy string to store the name of the game entered.
-    char final_name[106];                                                   // Stores the final name of the game file.
+    char dummy[NAME_SIZE];                                                        // Declaring a dummy string to store the name of the game entered.
+    char final_name[NAME_SIZE];                                                   // Stores the final name of the game file.
     strcpy(dummy, Name_Of_Game);
     strcpy(final_name, dummy);
     strcat(dummy, ".txt");
@@ -514,10 +517,10 @@ void Update_gamefile(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec* G, ch
 }
 
 // This Functions allows the user to Save the Current Game
-void Save(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec *G, char Name_Of_Game[106])
+void Save(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec *G, char Name_Of_Game[NAME_SIZE])
 {
 
-    // char Name_Of_Game[106];
+    // char Name_Of_Game[NAME_SIZE];
 
     // printf("Enter Name of the Game: ");
     // scanf(" %s", Name_Of_Game);
@@ -592,7 +595,7 @@ void Save(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec *G, char Name_Of_
 }
 
 // Allows user to Reload a Saved Game
-Game_Spec *Load_Saved_Game(char Name_Of_Game[105], int u[BOARD_SIZE][BOARD_SIZE], int *Player)
+Game_Spec *Load_Saved_Game(char Name_Of_Game[NAME_SIZE], int u[BOARD_SIZE][BOARD_SIZE], int *Player)
 {
 
     FILE *fp;
@@ -612,7 +615,7 @@ Game_Spec *Load_Saved_Game(char Name_Of_Game[105], int u[BOARD_SIZE][BOARD_SIZE]
     // Initialising Variables for Different Variations of the Game
     int Auto_Rotate, Compulsory_Capture, Board_Orientation;
     int Num_Black, Num_White, Num_White_Kings, Num_Black_Kings, Num_Moves;
-    char Name_Of_Player1[100], Name_Of_Player2[100];
+    char Name_Of_Player1[NAME_SIZE], Name_Of_Player2[NAME_SIZE];
 
     // Reading Game-Specs;
     fscanf(fp, "%d ", &Auto_Rotate);                                // Reading Auto - Rotate
@@ -742,10 +745,6 @@ void game_review(struct Game_Spec *g, int *Player) // The Review Game Function.
         swap(&temp[Initial_Int][a], &temp[Final_Int][b]);                                   // Swapping the token on the initial co-ordinate (after updation) and final co-ordinate.
         Print_Board(temp, g, *Player);                                                      // Prints the Board.
 
-        //orientation *= -1;
-
-        printf("\t COMMANDS:\n          \t ENTER N FOR NEXT STEP \n          \t ENTER P FOR PREVIOUS STEP\n          \t ENTER Q TO STOP REVIEWING\n\n");
-
         int flag = 0;                                                                       // It is used to keep track of the last choice and work the combinations of the next choice accordingly.
     H1:
         if ((c == 'N' || c == 'n'))
@@ -827,7 +826,7 @@ H2:             scanf(" %c", &response);
 void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
 {
 
-    char Command[100];
+    char Command[COMMAND_SIZE];
 
     printf("\n\n");
     Print_Board(u, G, *Player);                                             // Prints Board
@@ -1002,14 +1001,14 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
         }
         else if (strcmp(Command, "SAVE") == 0)                                  // Checks if 'Save' is inputted
         {                        
-            char Name_Of_Game[106];
+            char Name_Of_Game[NAME_SIZE];
             printf("\t ENTER NAME OF THE GAME: ");
             scanf(" %s", Name_Of_Game);
             Save(u, *Player, G, Name_Of_Game);                                  // Calls Function to Save Game
         }
         else if (strcmp(Command, "UPDATE") == 0)
         {
-            char Name_Of_Game[106];
+            char Name_Of_Game[NAME_SIZE];
             printf("\t ENTER NAME OF THE GAME: ");
             scanf(" %s", Name_Of_Game);
             Update_gamefile(u, *Player, G, Name_Of_Game);
@@ -1024,6 +1023,11 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             scanf("%d", &K);
 
             Next_K_Moves(u, *Player, K, G);                                     // Calls Function to Print Next K Moves
+            
+            printf("\t THE ABOVE ARE ALL THE POSSIBLE POSITIONS AFTER K MOVES\n");
+
+            Print_Board(u, G, *Player);                                         // Prints Board
+
         }
         else if (strcmp(Command, "REVIEW") == 0)                                // Checks if 'Review' is inputted
         {
@@ -1042,7 +1046,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             // Checks is Player Agreed to Save Game before Quitting
             if (strcmp(permission, "YES") == 0 || strcmp(permission, "Y") == 0 || strcmp(permission, "yes") == 0 || strcmp(permission, "y") == 0)
             {
-                char Name_Of_Game[106];
+                char Name_Of_Game[NAME_SIZE];
                 printf("\t ENTER NAME OF THE GAME: ");
                 scanf(" %s", Name_Of_Game);
                 Save(u, *Player, G, Name_Of_Game);                                            // Calls Function to Save Game
@@ -1050,7 +1054,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             }
             if(strcmp(permission, "UPDATE") == 0)
             {
-                char Name_Of_Game[106];
+                char Name_Of_Game[NAME_SIZE];
                 printf("\t ENTER NAME OF THE GAME: ");
                 scanf(" %s", Name_Of_Game);
                 Update_gamefile(u, *Player, G, Name_Of_Game);

@@ -5,7 +5,7 @@
 
 void get_instruction(int i, char** instruction){
 
-    char  ins[24][100];
+    char  ins[24][INSTRUCTION_SIZE];
     strcpy(ins[0], "\t\tINSTRUCTIONS\n");
     strcpy(ins[1], "\n");
     strcpy(ins[2], "\n");

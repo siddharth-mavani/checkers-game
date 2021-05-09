@@ -5,7 +5,7 @@ int main()
         // Initialising Variables for Different Variations of the Game
         int Auto_Rotate = 0, Compulsory_Capture = 1, Player = -1, Board_Orientation = 1;                                           
         int Num_Black = 12, Num_White = 12, Num_White_Kings = 0, Num_Black_Kings = 0, Num_Moves = 0;
-        char Name_Of_Player1[100], Name_Of_Player2[100];
+        char Name_Of_Player1[NAME_SIZE], Name_Of_Player2[NAME_SIZE];
 
         while(1){
 START:    
@@ -46,7 +46,7 @@ START:
                         int u[BOARD_SIZE][BOARD_SIZE], Player;                                                 
                         Game_Spec* G;
 
-                        char Name_Of_Game[105];                                     
+                        char Name_Of_Game[NAME_SIZE];                                     
                         printf("\t ENTER NAME OF GAME: ");                      
                         scanf(" %s", Name_Of_Game);
 
