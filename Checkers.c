@@ -72,20 +72,23 @@ void Insert_move(Game_Spec *Game, char Initial_Char, char Final_Char, int Initia
     return;
 }
 
+//THIS MOVES CHECKS IF ANY SUCCESSIVE CAPTURE IS POSSIBLE
 int SuccessiveCapture(int u[BOARD_SIZE][BOARD_SIZE], int InitialInt, int InitialCharToInt, int Player)
 {
     int num_kill_possible = 0;
-    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt + 2, InitialCharToInt + 2, 0, Player);
-    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt - 2, InitialCharToInt - 2, 0, Player);
-    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt + 2, InitialCharToInt - 2, 0, Player);
-    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt - 2, InitialCharToInt + 2, 0, Player);
+    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt + 2, InitialCharToInt + 2, 0, Player);   //TOP LEFT DIAGONAL
+    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt - 2, InitialCharToInt - 2, 0, Player);   //BOTTON RIGHT DIAGONAL
+    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt + 2, InitialCharToInt - 2, 0, Player);   //TOP RIGHT DIAGONAL
+    num_kill_possible += CheckMove(u, InitialInt, InitialCharToInt, InitialInt - 2, InitialCharToInt + 2, 0, Player);   //BOTTOM LEFT DIAGONAL
     return num_kill_possible / 2;
 }
 
-int Undo(int u[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G, int *Player, int CallFromKmoves)
+
+
+int Undo(int Board[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G, int *Player, int CallFromKmoves)
 {
 
-    if (G -> Num_Moves == 0)
+    if (G -> Num_Moves == 0)                        // if Num_Moves==0 we cant undo anymore
     {
         printf("\t NO MOVES LEFT TO UNDO\n");
         return 0;
@@ -98,40 +101,50 @@ int Undo(int u[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G, int *Player, int Ca
     int InitialCharToInt = InitialChar - 'A';
     int FinalCharToInt = FinalChar - 'A';
 
-    swap(&u[InitialInt][InitialCharToInt], &u[FinalInt][FinalCharToInt]);
+    swap(&Board[InitialInt][InitialCharToInt], &Board[FinalInt][FinalCharToInt]);  //here we are swapping the peices to their position before the move
 
-    if (G -> Last_Move -> Kill == 1)
-    {
-        u[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2] = G -> Last_Move -> Kill_Type;
+    if (G -> Last_Move -> Kill == 1)         //here we check if this move involves any capture and if it did we place the capture peice
+    {                                        //back at its position
+        Board[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2] = G -> Last_Move -> Kill_Type;
+        if(G->Last_Move->Kill_Type==WHITE){G->Num_White++;}
+        if(G->Last_Move->Kill_Type==WHITE_KING){G->Num_White_King++;}
+        if(G->Last_Move->Kill_Type==BLACK){G->Num_Black++;}
+        if(G->Last_Move->Kill_Type==BLACK_KING){G->Num_Black_King++;}
     }
 
-    if (G -> Last_Move -> Change_To_King == 1 && u[InitialInt][InitialCharToInt] == WHITE_KING)
-    {
-        u[InitialInt][InitialCharToInt] = WHITE;
+    //now we are checking if any peice changed to king in this move and if it did we change it back
+    if (G -> Last_Move -> Change_To_King == 1 && Board[InitialInt][InitialCharToInt] == WHITE_KING)
+    {                               
+        Board[InitialInt][InitialCharToInt] = WHITE;
+        G->Num_White++;
+        G->Num_White_King--;
     }
 
-    if (G -> Last_Move -> Change_To_King == 1 && u[InitialInt][InitialCharToInt] == BLACK_KING)
+    if (G -> Last_Move -> Change_To_King == 1 && Board[InitialInt][InitialCharToInt] == BLACK_KING)
     {
-        u[InitialInt][InitialCharToInt] = BLACK;
+        Board[InitialInt][InitialCharToInt] = BLACK;
+        G->Num_Black++;
+        G->Num_Black_King--;
     }
 
     struct Change *Temp = G -> Last_Move;
 
-    G -> Last_Move = Temp -> Prev;
-    G -> Last_Move -> Next = NULL;
+    G -> Last_Move = Temp -> Prev;              // here we remove the UNDOed move from the linked list containing all the moves
+    G -> Last_Move -> Next = NULL;              // and free its memory
 
-    free(Temp);
+    free(Temp);         
 
     G -> Num_Moves--;
 
-    if (G -> Last_Move -> Kill == 1 && CallFromKmoves == 0)
-    {
+    if (G -> Last_Move -> Kill == 1 && CallFromKmoves == 0)     // after UNDOing if the previous step involved a capture we call  the move function
+    {                                                           // from here in case any successive capture was possible
+
         *Player = -*Player;
         if (G -> Auto_Rotate)
         {
             G -> Board_Orientation = -G -> Board_Orientation;
         }
-        if (Move(u, Player, G, 1))
+        if (Move(Board, Player, G, 1))
         {
             *Player = -*Player;
             if (G -> Auto_Rotate)
@@ -144,6 +157,8 @@ int Undo(int u[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G, int *Player, int Ca
     }
     return 1;
 }
+
+
 
 int CheckMove(int u[BOARD_SIZE][BOARD_SIZE], int N1, int C1, int N2, int C2, int D, int Player)
 {
@@ -216,14 +231,14 @@ int CheckMove(int u[BOARD_SIZE][BOARD_SIZE], int N1, int C1, int N2, int C2, int
     return 0;
 }
 
-void Init(int u[BOARD_SIZE][BOARD_SIZE])
+void Init(int Board[BOARD_SIZE][BOARD_SIZE])            // This function initialises the board
 {
 
     for (int i = 0; i < BOARD_SIZE; i++)
     {
         for (int j = 0; j < BOARD_SIZE; j++)
         {
-            u[i][j] = EMPTY;
+            Board[i][j] = EMPTY;
         }
     }
 
@@ -233,36 +248,42 @@ void Init(int u[BOARD_SIZE][BOARD_SIZE])
         {
             if ((i + j) % 2 == 1)
             {
-                u[i][j] = BLACK;
-                u[7 - i][7 - j] = WHITE;
+                Board[i][j] = BLACK;                    // here we place all the white and black peices at their initial positions
+                Board[7 - i][7 - j] = WHITE;
             }
         }
     }
 
     return;
 }
-void print_ll(Game_Spec *g)
+void print_ll(Game_Spec *g)         //this functino can be used to print all the past moves
 {
-    Move_Node *curr = g -> Moves;
+    Move_Node *curr_move = g -> Moves;
     int i = 0;
-    while (curr != NULL)
+    while (curr_move != NULL)
     {
-        printf("%c%d   %c%d  %d\n\n", curr -> Initial_Char, curr -> Initial_Int, curr -> Final_Char, curr -> Final_Int, i);
+        printf("%c%d-->%c%d  %d\n\n", curr_move -> Initial_Char, curr_move -> Initial_Int, curr_move -> Final_Char, curr_move -> Final_Int, i);
         i++;
-        curr = curr -> Next;
+        curr_move = curr_move -> Next;
     }
 }
 
-int Move(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call)
+
+
+
+
+int Move(int Board[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call)
 {
-    int CC = 0;
+    int Compul_Capture = 0;
     if (G -> Compulsory_Capture)
     {
-        if (Capturepossible(u, *Player))
+        if (Capturepossible(Board, *Player))
         {
-            CC = 2;
-        }
-    }
+            Compul_Capture = 2;             // here we are assuring that we only consider a capture as a possible move (if a capture is possible)
+        }                                   // This is only significant when compulsory capture is ON
+    }                                       // Compul_Capture==2 implies we only consider captures as possible moves
+
+
     int FLAG = 0;
     char InitialChar;
     int InitialInt;
@@ -274,58 +295,66 @@ int Move(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call
     int Kill_Type = 0;
     int Change_To_King = 0;
     int Done = 0;
-    char c;
-    if (Undo_Call)
-    {
-        CC = 2;
+    char Response_Char;
+
+
+    if (Undo_Call)                          //if Move funnction is called from undo function we already have the initial coordinates
+    {                                       // and undo function only calls moves function when a capture was involved in the previous move
+        Compul_Capture = 2;                 // so now we only consider captures as possible moves
         FLAG = 2;
         InitialChar = G -> Last_Move -> Final_Char;
         InitialCharToInt = G -> Last_Move -> Final_Char - 'A';
         InitialInt = G -> Last_Move -> Final_Int;
     }
-    do
+
+
+    do                                      // using a do-while loop as players can make successive captures
     {
+
         //FLAG=2 means a capture has been made in last turn so here we are asking the user for successive capture
         if (FLAG == 2 && G -> Compulsory_Capture == 0)
         {
-            Print_Board(u, G, *Player);
+            Print_Board(Board, G, *Player);
+            if(Undo_Call){printf("\tPREVIOUS MOVE INVOVLED A CAPTURE\n");}
             printf("\t DO YOU WANT TO MAKE A SUCCESSIVE CAPTURE(ENTER Y OR N):  ");
-            scanf("\n%c", &c);
-            if (c == 'N')
+            scanf("\n%c", &Response_Char);
+            if (Response_Char == 'N')
             {
                 return 1;
             }
-            if (c == 'Y')
+            if (Response_Char == 'Y')
             {
                 printf("\t ENTER CORDINATES OF THE FINAL SQUARE: ");
             }
         }
 
+        // if compulsory capture is ON the player needs to make any possible capture so here we check that
         if (FLAG == 2 && G -> Compulsory_Capture == 1)
         {
-            CC = 2;
-            int NumKillPossible = SuccessiveCapture(u, InitialInt, InitialCharToInt, *Player);
-            printf("SUCCESSIVE CAPTURE IS ON\n");
+            Compul_Capture = 2;
+            int NumKillPossible = SuccessiveCapture(Board, InitialInt, InitialCharToInt, *Player);
             if (!NumKillPossible)
             {
-                printf("BUT NO CAPTURE CAN BE MADE\n");
+                
                 return 1;
             }
-            Print_Board(u, G, *Player);
+            Print_Board(Board, G, *Player);
+            if(Undo_Call){printf("PREVIOUS MOVE INVOVLED A CAPTURE\n");}
+            printf("\tCOMPULSIVE CAPTURE IS ON SO YOU NEED TO MAKE ANY POSSIBLE SUCCESSIVE CAPTURE\n");
             if (NumKillPossible == 1)
             {
-                printf("1 POSSIBLE CAPTURE IS POSSIBLE\n");
+                printf("\t1 POSSIBLE CAPTURE IS POSSIBLE\n");
             }
             if (NumKillPossible == 2)
             {
-                printf("2 POSSIBLE CAPTURES ARE POSSIBLE\n");
+                printf("\t2 POSSIBLE CAPTURES ARE POSSIBLE\n");
             }
             if (NumKillPossible == 3)
             {
-                printf("3 POSSIBLE CAPTURES ARE POSSIBLE\n");
+                printf("\t3 POSSIBLE CAPTURES ARE POSSIBLE\n");
             }
-            printf("IF YOU WANT TO UNDO PREVIOUS CAPTUE ENTER \"U1\"\n");
-            printf("ENTER CORDINATES OF THE FINAL SQUARE: ");
+            printf("\tIF YOU WANT TO UNDO PREVIOUS CAPTUE ENTER \"U1\"\n");
+            printf("\tENTER CORDINATES OF THE FINAL SQUARE: ");
         }
 
         // If FLAG!=2 we need to input the coordinates for the initial square , if FLAG=2 we can just use final cord. of last
@@ -341,29 +370,30 @@ int Move(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call
         }
 
         // Asking for final coordinates
-        char dummy;
-        scanf("%c%c%d", &dummy, &FinalChar, &FinalInt);
-        printf("%c%c%dduu",dummy,FinalChar,FinalInt);
-        if (FinalChar == 'U' && FinalInt == 1)
+        char dummy_char;
+        scanf("%c%c%d", &dummy_char, &FinalChar, &FinalInt);
+
+        if (FinalChar == 'U' && FinalInt == 1)        // this function is used to UNDO a capture made in the current turn 
         {
             if (G -> Auto_Rotate)
             {
                 G -> Board_Orientation = -G -> Board_Orientation;
             }
             *Player = -*Player;
-            Undo(u, G, Player, 0);
-            return (1 - Undo_Call);
+            Undo(Board, G, Player, 0);
+            return (1 - Undo_Call);                 // the return value here depends on the function calling the move function
         }
         FinalCharToInt = FinalChar - 'A';
         FinalInt--;
 
         // Checking whether move is correct or not and returning 0 is move is incorrect , we must not return if we are making
         // successive capture
-        int val = CheckMove(u, InitialInt, InitialCharToInt, FinalInt, FinalCharToInt, CC, *Player);
-        //printf("%d is value returned by CheckMove function \n\n", val);
+        int val = CheckMove(Board, InitialInt, InitialCharToInt, FinalInt, FinalCharToInt, Compul_Capture, *Player);
+
+        //here we check if the invalid move is invalid due to any possible capture
         if (val == 0 && FLAG != 2)
         {
-            if (CheckMove(u, InitialInt, InitialCharToInt, FinalInt, FinalCharToInt, 0, *Player))
+            if (CheckMove(Board, InitialInt, InitialCharToInt, FinalInt, FinalCharToInt, 0, *Player))
             {
                 printf("\t INVALID AS A CAPTURE MUST BE MADE\n");
                 return 0;
@@ -371,40 +401,57 @@ int Move(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call
             printf("\t WRONG INPUT\n");
             return 0;
         }
+
+
         if (val == 0 && FLAG == 2)
         {
             printf("\t WRONG INPUT\n");
             continue;
         }
 
+
         //here we are checking if the moved coin transformed to king or not
-        if (FinalInt == 0 && u[InitialInt][InitialCharToInt] == WHITE)
+        if (FinalInt == 0 && Board[InitialInt][InitialCharToInt] == WHITE)
         {
-            u[InitialInt][InitialCharToInt] = WHITE_KING;
+            Board[InitialInt][InitialCharToInt] = WHITE_KING;
             Change_To_King = 1;
             G -> Num_White_King++;
+            G->Num_White--;
         }
-        if (FinalInt == 7 && u[InitialInt][InitialCharToInt] == BLACK)
+        if (FinalInt == 7 && Board[InitialInt][InitialCharToInt] == BLACK)
         {
-            u[InitialInt][InitialCharToInt] = BLACK_KING;
+            Board[InitialInt][InitialCharToInt] = BLACK_KING;
             Change_To_King = 1;
             G -> Num_Black_King++;
+            G->Num_Black--;
         }
-
+ 
+        //here we check if a capture was made and modify the variables accordingly
         if (val == 2)
         {
-            Kill_Type = u[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2];
+            Kill_Type = Board[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2];
             Kill = 1;
+            if(Kill_Type==WHITE){G->Num_White--;}
+            if(Kill_Type==WHITE_KING){G->Num_White_King--;}
+            if(Kill_Type==BLACK){G->Num_Black--;}
+            if(Kill_Type==BLACK_KING){G->Num_Black_King--;}
+            
         }
 
-        Insert_move(G, InitialChar, FinalChar, InitialInt, FinalInt, u[InitialInt][InitialCharToInt], Kill, Kill_Type, Change_To_King);
+        //here we insert the move in the linked list storing all the moves
+        Insert_move(G, InitialChar, FinalChar, InitialInt, FinalInt, Board[InitialInt][InitialCharToInt], Kill, Kill_Type, Change_To_King);
+       
         Change_To_King = 0;
-        //here we are swapping the final and initial squares
-        swap(&u[InitialInt][InitialCharToInt], &u[FinalInt][FinalCharToInt]);
 
+
+        //here we are swapping the final and initial squares
+        swap(&Board[InitialInt][InitialCharToInt], &Board[FinalInt][FinalCharToInt]);
+
+        //here we check if a capture was made and modify the board accordingly
         if (val == 2)
         {
-            u[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2] = EMPTY;
+            
+            Board[(InitialInt + FinalInt) / 2][(InitialCharToInt + FinalCharToInt) / 2] = EMPTY;
             FLAG = 2;
             InitialChar = FinalChar;
             InitialCharToInt = FinalCharToInt;
@@ -417,6 +464,10 @@ int Move(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call
 
     return 1;
 }
+
+
+
+
 
 // This function returns 1 if Game is availabe, 0 otherwise
 int Name_Is_Available(char Name_Of_Game[105])
@@ -806,13 +857,13 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                     if (*Player < 0)                                        // Black has won
                     { 
 
-                        printf("\t %s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n", G -> Name_Of_Player1);
+                        printf("\t %s HAS WON THE GAME!!!!!\n\tCONGRATULATIONS\n", G -> Name_Of_Player1);
                         printf("\t BETTER LUCK NEXT TIME %s\n", G -> Name_Of_Player2);
                     }
                     else                                                    // White has won
                     { 
 
-                        printf("\t %s HAS WON THE GAME!!!!!\nCONGRATULATIONS\n", G -> Name_Of_Player2);
+                        printf("\t %s HAS WON THE GAME!!!!!\n\tCONGRATULATIONS\n", G -> Name_Of_Player2);
                         printf("\t BETTER LUCK NEXT TIME %s\n", G -> Name_Of_Player1);
                     }
 
