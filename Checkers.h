@@ -61,19 +61,21 @@ typedef struct Node{
 
 //checkers.c
 
-Move_Node* Makenode(void);
+Move_Node* Makenode(void);      // Creates New Node
 
+// Initialises Game_Spec
 Game_Spec* Init_Game(int Auto_Rotate, int Compulsory_Capture, int Num_Moves, int Num_Black, int Num_White, int Num_Black_King, int Num_White_King, int Board_Orientation, char Name_Of_Player1[100], char Name_Of_Player2[100]);
 
+// Inserts Move into the Doubly Linked List
 void Insert_move(Game_Spec* Game, char Initial_Char, char Final_Char, int Initial_Int, int Final_Int, int Type, int Kill, int Kill_type , int Change_To_King);
 
-int Undo(int u[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G , int* Player, int CallNextKMoves);
+int Undo(int u[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G , int* Player, int CallNextKMoves);                 // Undos the Latest Move 
 
 int CheckMove(int u[BOARD_SIZE][BOARD_SIZE],int n1, int c1, int n2, int c2, int d, int player);                 // c1 is letter1,c2 is letter 2, n1,n2 are the first and the second numbers
 
-void Init(int u[BOARD_SIZE][BOARD_SIZE]);
+void Init(int u[BOARD_SIZE][BOARD_SIZE]);                                                                       // Initiales the Game Board
 
-int Move(int u[BOARD_SIZE][BOARD_SIZE],int* player, Game_Spec* G , int Undo_Call );
+int Move(int u[BOARD_SIZE][BOARD_SIZE],int* player, Game_Spec* G , int Undo_Call );                             // Moves Tokens
 
 void Save(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec* G, char Name_Of_Game[106]);                     // Allows user to Save the Current Game
 
@@ -83,26 +85,22 @@ Game_Spec* Load_Saved_Game(char Name_Of_Game[105], int u[BOARD_SIZE][BOARD_SIZE]
 
 void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G);                                       // This Function simulates the Game
 
-int Name_Is_Available(char Name_Of_Game[105]);
+int Name_Is_Available(char Name_Of_Game[105]);                                                                  // Checks if Name is Available
 
-void suggest(int Board[BOARD_SIZE][BOARD_SIZE],int player,Game_Spec* G);
+void suggest(int Board[BOARD_SIZE][BOARD_SIZE],int player,Game_Spec* G);                                        // Suggests all possible moves for current turn
 
 bool PossibleMoves(char coord_letter, int coord_no, int Board[BOARD_SIZE][BOARD_SIZE], int player, bool print, bool capture);    //Checks if moves are possible for a specific piece and can print them       
 
-bool endgame(Game_Spec* G,int Board[BOARD_SIZE][BOARD_SIZE], int Player);                                            //Checks if the game has ended
+bool endgame(Game_Spec* G,int Board[BOARD_SIZE][BOARD_SIZE], int Player);                                       //Checks if the game has ended
 
-void Next_K_Moves(int u[BOARD_SIZE][BOARD_SIZE], int player,int k ,Game_Spec* G);
+void Next_K_Moves(int u[BOARD_SIZE][BOARD_SIZE], int player,int k ,Game_Spec* G);                               // Prints all possible moves for next K turns
 
-bool Capturepossible(int Board[BOARD_SIZE][BOARD_SIZE],int player);
+bool Capturepossible(int Board[BOARD_SIZE][BOARD_SIZE],int player);                                             // Checks if capture is possible
 
-void game_review(struct Game_Spec *g, int* Player);
+void game_review(struct Game_Spec *g, int* Player);                                                             // Allows user to Review Game
 
 
 // Print_Board.c
-void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* Game, int Player);
-
-void Print_Num(int u[BOARD_SIZE][BOARD_SIZE]);
-
-void print_ll(Game_Spec *g);
+void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* Game, int Player);                                   // Prints Current State of Board
 
 #endif

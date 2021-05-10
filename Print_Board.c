@@ -3,9 +3,14 @@
 #include<stdlib.h>
 #include<stdio.h>
 
+
+// This Function returns a particular instruction
 void get_instruction(int i, char** instruction){
 
+    // Initialising Arrays to store instructions
     char  ins[24][INSTRUCTION_SIZE];
+
+    // Storing all the instructions
     strcpy(ins[0], "\t\tINSTRUCTIONS\n");
     strcpy(ins[1], "\n");
     strcpy(ins[2], "\n");
@@ -34,6 +39,7 @@ void get_instruction(int i, char** instruction){
     strcpy(*instruction, ins[i]);
 }
 
+// Prints Rows of the Board
 void print_row(int type){
 
     if(type == 1){
@@ -46,6 +52,7 @@ void print_row(int type){
     return ;
 }
 
+// This Function Prints the Current State of the Board
 void Print_Board(int Board[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
     printf("\n\n\n\n\n");
     char* instruction;                                  // this string store the instruction printed on the right-side of board
