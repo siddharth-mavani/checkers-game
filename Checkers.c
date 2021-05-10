@@ -857,7 +857,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                         G -> Board_Orientation = -G -> Board_Orientation;   // Toggles Board-Orientation
                     }
 
-                    Temp_Board_Orientation = - Temp_Board_Orientation;  // Switches Temporary Board Orientation
+                    Temp_Board_Orientation = - Temp_Board_Orientation;      // Switches Temporary Board Orientation
 
                     Print_Board(u, G, *Player);                             // Prints Board
                 }
@@ -893,7 +893,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                             G -> Board_Orientation = -G -> Board_Orientation;   // Toggles Board-Orientation
                         }
 
-                        Temp_Board_Orientation = - Temp_Board_Orientation;  // Switches Temporary Board Orientation
+                        Temp_Board_Orientation = - Temp_Board_Orientation;      // Switches Temporary Board Orientation
                         
                         Print_Board(u, G, *Player);                             // Prints Board
                     }
@@ -920,7 +920,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                             G -> Board_Orientation = -G -> Board_Orientation;   // Toggles Board-Orientation
                         }
                         
-                        Temp_Board_Orientation = - Temp_Board_Orientation;  // Switches Temporary Board Orientation
+                        Temp_Board_Orientation = - Temp_Board_Orientation;      // Switches Temporary Board Orientation
                         
                         Print_Board(u, G, *Player);                             // Prints Board
                     }
@@ -955,7 +955,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                          // Checks if User wants Auto Rotate to be ON
                         if(strcmp(s, "YES") == 0 || strcmp(s, "Y") == 0 || strcmp(s, "yes") == 0 || strcmp(s, "y") == 0){
                                 G -> Auto_Rotate = 1;
-                                G -> Board_Orientation = Temp_Board_Orientation;                                    // Assigning Current Board Orientation to Game Specs
+                                G -> Board_Orientation = Temp_Board_Orientation;            // Assigning Current Board Orientation to Game Specs
                         }
                         else
                         {
@@ -983,7 +983,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             }
             printf("\n");
         }
-        else if (strcmp(Command, "SAVE") == 0)                                  // Checks if 'Save' is inputted
+        else if (strcmp(Command, "SAVE") == 0)                          // Checks if 'Save' is inputted
         {                        
             char Name_Of_Game[NAME_SIZE];
 
@@ -991,10 +991,10 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             scanf(" %s", Name_Of_Game);
 
             if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
-                continue;                                               // Goes Back to Main Menu 
+                continue;                                               // Returns to Game 
             }                                 
 
-            Save(u, *Player, G, Name_Of_Game);                                  // Calls Function to Save Game
+            Save(u, *Player, G, Name_Of_Game);                          // Calls Function to Save Game
         }
         else if (strcmp(Command, "UPDATE") == 0)
         {
@@ -1004,13 +1004,13 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             scanf(" %s", Name_Of_Game);
 
             if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
-                continue;                                               // Goes Back to Main Menu 
+                continue;                                               // Returns to Game 
             } 
 
             Update_gamefile(u, *Player, G, Name_Of_Game);
             printf("\n\n");
         }
-        else if (strcmp(Command, "NEXTK") == 0)                                 // Checks if 'NextK' is inputted
+        else if (strcmp(Command, "NEXTK") == 0)                         // Checks if 'NextK' is inputted
         { 
 
             int K;
@@ -1048,10 +1048,10 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                 scanf(" %s", Name_Of_Game);
 
                 if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
-                    continue;                                               // Goes Back to Main Menu 
+                    continue;                                               // Returns to Game 
                 } 
 
-                Save(u, *Player, G, Name_Of_Game);                                            // Calls Function to Save Game
+                Save(u, *Player, G, Name_Of_Game);                          // Calls Function to Save Game
                 return;
             }
             if(strcmp(permission, "UPDATE") == 0)
@@ -1062,7 +1062,7 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
                 scanf(" %s", Name_Of_Game);
 
                 if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
-                    continue;                                               // Goes Back to Main Menu 
+                    continue;                                               // Returns to Game 
                 } 
 
                 Update_gamefile(u, *Player, G, Name_Of_Game);
