@@ -84,7 +84,6 @@ int SuccessiveCapture(int u[BOARD_SIZE][BOARD_SIZE], int InitialInt, int Initial
 }
 
 
-
 int Undo(int Board[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G, int *Player, int CallFromKmoves)
 {
 
@@ -160,8 +159,6 @@ int Undo(int Board[BOARD_SIZE][BOARD_SIZE], struct Game_Spec *G, int *Player, in
     }
     return 1;
 }
-
-
 
 int CheckMove(int u[BOARD_SIZE][BOARD_SIZE], int N1, int C1, int N2, int C2, int D, int Player)
 {
@@ -270,9 +267,6 @@ void print_ll(Game_Spec *g)         //this functino can be used to print all the
         curr_move = curr_move -> Next;
     }
 }
-
-
-
 
 
 int Move(int Board[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_Call)
@@ -468,10 +462,6 @@ int Move(int Board[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G, int Undo_
     return 1;
 }
 
-
-
-
-
 // This function returns 1 if Game is availabe, 0 otherwise
 int Name_Is_Available(char Name_Of_Game[105])
 {
@@ -520,13 +510,7 @@ void Update_gamefile(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec* G, ch
 void Save(int u[BOARD_SIZE][BOARD_SIZE], int Player, Game_Spec *G, char Name_Of_Game[NAME_SIZE])
 {
 
-    // char Name_Of_Game[NAME_SIZE];
-
-    // printf("Enter Name of the Game: ");
-    // scanf(" %s", Name_Of_Game);
-
     strcat(Name_Of_Game, ".txt");                                   // Game will be stored as <Name_Of_Game>.txt
-
 
     // Checking if the Game exists
     while (Name_Is_Available(Name_Of_Game))                         // Running a loop untill user inputs correct file name
@@ -885,8 +869,8 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             { 
                 printf("\t NO MOVES LEFT TO UNDO\n");
             }
-            else
-            {
+            else 
+            { 
 
                 char permission[5];
 
@@ -1002,15 +986,27 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
         else if (strcmp(Command, "SAVE") == 0)                                  // Checks if 'Save' is inputted
         {                        
             char Name_Of_Game[NAME_SIZE];
+
             printf("\t ENTER NAME OF THE GAME: ");
             scanf(" %s", Name_Of_Game);
+
+            if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
+                continue;                                               // Goes Back to Main Menu 
+            }                                 
+
             Save(u, *Player, G, Name_Of_Game);                                  // Calls Function to Save Game
         }
         else if (strcmp(Command, "UPDATE") == 0)
         {
             char Name_Of_Game[NAME_SIZE];
+
             printf("\t ENTER NAME OF THE GAME: ");
             scanf(" %s", Name_Of_Game);
+
+            if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
+                continue;                                               // Goes Back to Main Menu 
+            } 
+
             Update_gamefile(u, *Player, G, Name_Of_Game);
             printf("\n\n");
         }
@@ -1047,16 +1043,28 @@ void Play_Game(int u[BOARD_SIZE][BOARD_SIZE], int *Player, Game_Spec *G)
             if (strcmp(permission, "YES") == 0 || strcmp(permission, "Y") == 0 || strcmp(permission, "yes") == 0 || strcmp(permission, "y") == 0)
             {
                 char Name_Of_Game[NAME_SIZE];
+
                 printf("\t ENTER NAME OF THE GAME: ");
                 scanf(" %s", Name_Of_Game);
+
+                if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
+                    continue;                                               // Goes Back to Main Menu 
+                } 
+
                 Save(u, *Player, G, Name_Of_Game);                                            // Calls Function to Save Game
                 return;
             }
             if(strcmp(permission, "UPDATE") == 0)
             {
                 char Name_Of_Game[NAME_SIZE];
+
                 printf("\t ENTER NAME OF THE GAME: ");
                 scanf(" %s", Name_Of_Game);
+
+                if(strcmp(Name_Of_Game, "BACK") == 0){                      // Checks if 'BACK' is inputted
+                    continue;                                               // Goes Back to Main Menu 
+                } 
+
                 Update_gamefile(u, *Player, G, Name_Of_Game);
                 printf("\n\n");
             }
@@ -1247,8 +1255,6 @@ bool endgame(Game_Spec *G, int Board[BOARD_SIZE][BOARD_SIZE], int Player)
     }
     return true; // no pieces of the colours has possible moves, game has ended
 }
-
-//////////////////////////////////////////////////////////////////////////////*********************************************////////////////////////
 
 void copy(int v[BOARD_SIZE ][BOARD_SIZE ], int u [BOARD_SIZE ][BOARD_SIZE ])
 {
