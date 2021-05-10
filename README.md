@@ -6,10 +6,10 @@
 
 # Set-Up Instructions 
 
-    1. Clone the repository to your local system by  `git clone https://github.com/siddharth-mavani/checkers-game.git`
+    1. Clone the repository to your local system by  <code> git clone https://github.com/siddharth-mavani/checkers-game.git </code>
     2. CD into the cloned repository.
-    3. run `make checkers` in the terminal to compile the code and generate the executable.
-    4. run `./checkers` in the terminal to start playing the game.
+    3. run <code> make checkers </code> in the terminal to compile the code and generate the executable.
+    4. run <code> ./checkers </code> in the terminal to start playing the game.
 
 # Game Instructions
 
@@ -22,7 +22,7 @@
             B. UNDO, to undo the previous move with consensus of both the players.
             C. REVIEW, to launch the game review.
             D. SUGGEST, to help yourself with the moves suggested by the program.
-            E. NEKTK, to get all possible moves in next `K` turns. 
+            E. NEKTK, to get all possible moves in next <code> K </code> turns. 
             F. SAVE, to save the game you are playing.
             G. UPDATE, to update the game-file of the previously played game.
             H. SETTINGS, to access the in game settings.
