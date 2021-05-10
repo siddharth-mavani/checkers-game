@@ -25,7 +25,7 @@ START:
                 if(choice == 1){                                                    
                         
                         // Initialising Game board and Linked List
-                        int u[BOARD_SIZE][BOARD_SIZE];                                                                        
+                        int Board[BOARD_SIZE][BOARD_SIZE];                                                                        
                         Game_Spec *G;
 
                         printf("\t ENTER NAME OF PLAYER 1: ");
@@ -35,15 +35,15 @@ START:
                         
                         // Initialising Game
                         G = Init_Game(Auto_Rotate, Compulsory_Capture, Num_Moves, Num_Black, Num_White, Num_Black_Kings, Num_White_Kings, Board_Orientation, Name_Of_Player1, Name_Of_Player2);
-                        Init(u);
+                        Init(Board);
 
-                        Play_Game(u, &Player, G);                                   // This Function simulates the Game
+                        Play_Game(Board, &Player, G);                                   // This Function simulates the Game
 
                 }
                 else if(choice == 2){                                               
 
                         // Initialising Game board and Linked List
-                        int u[BOARD_SIZE][BOARD_SIZE], Player;                                                 
+                        int Board[BOARD_SIZE][BOARD_SIZE], Player;                                                 
                         Game_Spec* G;
 
                         char Name_Of_Game[NAME_SIZE];                                     
@@ -70,8 +70,8 @@ START:
                         
                         }
 
-                        G = Load_Saved_Game(Name_Of_Game, u, &Player);  
-                        Play_Game(u, &Player, G);                                   // This Function simulates the Game
+                        G = Load_Saved_Game(Name_Of_Game, Board, &Player);  
+                        Play_Game(Board, &Player, G);                                   // This Function simulates the Game
                 
                 }
                 else if(choice == 3){
