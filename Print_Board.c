@@ -37,58 +37,58 @@ void get_instruction(int i, char** instruction){
 void print_row(int type){
 
     if(type == 1){
-        printf("\t  ▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░");
+        printf("\t  ▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░");         //rows  which start with lighter square
     }
     if(type == 2){
-        printf("\t  ░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒");
+        printf("\t  ░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒░░░░░▒▒▒▒▒");         //rows which start with darker square
     }
 
     return ;
 }
 
-void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
+void Print_Board(int Board[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
     printf("\n\n\n\n\n");
-    char* instruction;
+    char* instruction;                                  // this string store the instruction printed on the right-side of board
     instruction = (char*)malloc(sizeof(char)*100);
 
     if(G -> Board_Orientation == -1){
 
-        printf("\t    A    B    C    D    E    F    G    H \n");
+        printf("\t    A    B    C    D    E    F    G    H \n");          //for  coordinates
 
         for(int i = 0 ; i < BOARD_SIZE; i++){
 
-            if(i % 2 == 0){
-                print_row(1);
-            }
+            if(i % 2 == 0){                                             //for every iteration of i we print 3 lines
+                print_row(1);                                           // 1 line above the peices, 1 below
+            }                                                           // here we check whether we need to prive line of type 1 or 2        
             else{
                 print_row(2);
             }
 
-            get_instruction(3*i, &instruction);
-            printf("%s", instruction);
+            get_instruction(3*i, &instruction);                         // here we copy the instruction we need to print in the instruction sring
+            printf("%s", instruction);                                  // we print instruction here
 
-            printf("\t%d ", i+1);
+            printf("\t%d ", i+1);                                       
             for(int j = 0 ; j < BOARD_SIZE ; j++){
 
-                if ((i + j) % 2 == 1){
+                if ((i + j) % 2 == 1){                                  // since we only ned to print the peices every alternate block   
 
-                    printf("░░");
-                    if (u[i][j] == 0){
+                    printf("░░");                       
+                    if (Board[i][j] == EMPTY){                          // we print different charachters for different type of peices
                         printf("░░░");
                     }
-                    if (u[i][j] == 1){
+                    if (Board[i][j] == WHITE){
                         printf("\033[1;37m");
                         printf("█");
                         printf("\033[0m");
                         printf("░░");
                     }
-                    if (u[i][j] == -1){
+                    if (Board[i][j] == BLACK){
                         printf("\033[1;30m");
                         printf("█");
                         printf("\033[0m");
                         printf("░░");
                     }
-                    if (u[i][j] == 2){
+                    if (Board[i][j] == WHITE_KING){
                         printf("\033[1;37m");
                         printf("\b█");
                         printf("\033[0m");
@@ -98,7 +98,7 @@ void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
                         printf("\033[0m");
                         printf("░");
                     }
-                    if (u[i][j] == -2){
+                    if (Board[i][j] == BLACK_KING){
                         printf("\033[1;30m");
                         printf("\b█");
                         printf("\033[0m");
@@ -119,20 +119,21 @@ void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
             printf("%s", instruction);
 
             if(i % 2 == 0){
-                print_row(1);
+                print_row(1);                   // here we print the line below the peices
             }
             else{
                 print_row(2);
             }
 
-            get_instruction(3*i+2,&instruction);
+            get_instruction(3*i+2,&instruction);        
             printf("%s",instruction);
 
         }
         printf("\t    A    B    C    D    E    F    G    H \n");
     }
-    else if(G -> Board_Orientation == 1){
-
+    else if(G -> Board_Orientation == 1){                       // if we want to print inverted board we change board-orientation 
+                                                                // traverse the board in reverse order
+                                                                
         printf("\t    H    G    F    E    D    C    B    A \n");
 
         for(int i = BOARD_SIZE  - 1 ; i >= 0; i--){
@@ -153,22 +154,22 @@ void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
                 if ((i + j) % 2 == 1)
                 {
                     printf("░░");
-                    if (u[i][j] == 0){
+                    if (Board[i][j] == EMPTY){
                         printf("░░░");
                     }
-                    if (u[i][j] == 1){
+                    if (Board[i][j] == WHITE){
                         printf("\033[1;37m");
                         printf("█");
                         printf("\033[0m");
                         printf("░░");
                     }
-                    if (u[i][j] == -1){
+                    if (Board[i][j] == BLACK){
                         printf("\033[1;30m");
                         printf("█");
                         printf("\033[0m");
                         printf("░░");
                     }
-                    if (u[i][j] == 2){
+                    if (Board[i][j] == WHITE_KING){
                         printf("\033[1;37m");
                         printf("\b█");
                         printf("\033[0m");
@@ -178,7 +179,7 @@ void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
                         printf("\033[0m");
                         printf("░");
                     }
-                    if (u[i][j] == -2){
+                    if (Board[i][j] == BLACK_KING){
                         printf("\033[1;30m");
                         printf("\b█");
                         printf("\033[0m");
@@ -223,16 +224,3 @@ void Print_Board(int u[BOARD_SIZE][BOARD_SIZE], Game_Spec* G, int Player){
 }
 
 
-void Print_Num(int u[BOARD_SIZE][BOARD_SIZE]){
-
-    printf("A  B  C  D  E  F  G  H\n");
-
-    for(int i = 0; i < BOARD_SIZE; i++){
-        for(int j=0 ; j < BOARD_SIZE;j++){
-            printf("%2d ",u[i][j]);
-        }
-        printf("\n");
-    }
-
-    return ;
-}
