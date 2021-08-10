@@ -14,18 +14,18 @@
  # Game Instructions
 
    1. Enter 1 to start new game. 
-         -Enter the information about the players to start the game.
-         -Enter the following commands to use the provided functionalities according to the given syntax as instructions on the side of the board:
+         1. Enter the information about the players to start the game.
+         2. Enter the following commands to use the provided functionalities according to the given syntax as instructions on the side of the board:
 
-          MOVE, to move the tokens.
-          UNDO, to undo the previous move with consensus of both the players.
-          REVIEW, to launch the game review.
-          SUGGEST, to help yourself with the moves suggested by the program.
-          NEXTK, to get all possible moves in next 'K' turns. 
-          SAVE, to save the game you are playing.
-          UPDATE, to update the game-file of the previously played game.
-          SETTINGS, to access the in game settings.
-          QUIT, to quit the game.
+           MOVE, to move the tokens.
+           UNDO, to undo the previous move with consensus of both the players.
+           REVIEW, to launch the game review.
+           SUGGEST, to help yourself with the moves suggested by the program.
+           NEXTK, to get all possible moves in next 'K' turns. 
+           SAVE, to save the game you are playing.
+           UPDATE, to update the game-file of the previously played game.
+           SETTINGS, to access the in game settings.
+           QUIT, to quit the game.
 
    2. Enter 2 to load a saved game, followed by the name of the game.
    3. Enter 3 to change the game settings. The following settings can be modified
