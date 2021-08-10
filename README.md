@@ -8,8 +8,8 @@
 
    1. Clone the repository to your local system by  'git clone https://github.com/siddharth-mavani/checkers-game.git'
    2. CD into the cloned repository.
-   3. run 'make checkers' in the terminal to compile the code and generate the executable.
-   4. run './checkers' in the terminal to start playing the game.
+   3. run `make checkers` in the terminal to compile the code and generate the executable.
+   4. run `./checkers` in the terminal to start playing the game.
 
  # Game Instructions
 
